@@ -284,6 +284,61 @@
       line-height: 1.55;
     }
 
+    .fee-card {
+      grid-column: 1 / -1;
+      padding: 17px;
+      border: 1px solid rgba(11, 59, 52, .11);
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(235, 244, 239, .72), rgba(255, 255, 255, .82));
+    }
+
+    .fee-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .fee-head h3 { margin: 0; font-size: 15px; }
+
+    .fee-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .fee-total {
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--forest);
+      background: white;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .fee-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .fee-grid label {
+      min-height: 18px;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+
+    .fee-note {
+      margin: 12px 0 0;
+      color: #697a76;
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
     .actions { display: flex; gap: 10px; margin-top: 24px; }
 
     .primary, .secondary, .copy-btn {
@@ -390,6 +445,7 @@
 
     .metric strong.positive { color: var(--rise); }
     .metric strong.negative { color: var(--fall); }
+    .metric.fee-metric strong { font-size: 20px; }
 
     .result-note {
       margin: auto 0 0;
@@ -665,6 +721,9 @@
       .level-point b { font-size: 12px; }
       .history-summary { grid-template-columns: 1fr; }
       .actions { flex-direction: column; }
+      .fee-card { padding: 15px; }
+      .fee-head { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .fee-total { align-self: flex-start; }
       footer { flex-direction: column; gap: 5px; }
     }
 
@@ -704,7 +763,7 @@
         <div class="form-side">
           <p class="section-kicker">Compound growth</p>
           <h2>年复利收益</h2>
-          <p class="section-desc">收益率按年化复利处理。先计算完整日历年和月，不足月的部分再按实际天数折算。</p>
+          <p class="section-desc">收益率按年化复利处理，并可计入买入费和三项基金运作费。先计算完整日历年和月，不足月的部分再按实际天数折算。</p>
 
           <div class="mode-switch" aria-label="投资方式">
             <button class="mode-btn" type="button" data-mode="lump" aria-selected="true">一次性本金</button>
@@ -741,6 +800,46 @@
                   </div>
                 </div>
               </div>
+              <section class="fee-card" aria-labelledby="lumpFeeTitle">
+                <div class="fee-head">
+                  <div>
+                    <h3 id="lumpFeeTitle">基金费率设置</h3>
+                    <p>买入费按投入金额扣除；运作费按年估算。</p>
+                  </div>
+                  <span class="fee-total">年运作费合计 <b id="lumpOperatingTotal">0.00%</b></span>
+                </div>
+                <div class="fee-grid">
+                  <div class="field">
+                    <label for="lumpBuyFee">买入费率</label>
+                    <div class="input-wrap">
+                      <input class="with-suffix fee-input" id="lumpBuyFee" type="number" min="0" max="2" step="0.01" value="0.00" inputmode="decimal" required>
+                      <span class="suffix">%</span>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="lumpManagementFee">管理费率（年）</label>
+                    <div class="input-wrap">
+                      <input class="with-suffix fee-input" id="lumpManagementFee" type="number" min="0" max="2" step="0.01" value="0.00" inputmode="decimal" required>
+                      <span class="suffix">%</span>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="lumpCustodyFee">托管费率（年）</label>
+                    <div class="input-wrap">
+                      <input class="with-suffix fee-input" id="lumpCustodyFee" type="number" min="0" max="2" step="0.01" value="0.00" inputmode="decimal" required>
+                      <span class="suffix">%</span>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="lumpSalesFee">销售服务费（年）</label>
+                    <div class="input-wrap">
+                      <input class="with-suffix fee-input" id="lumpSalesFee" type="number" min="0" max="2" step="0.01" value="0.00" inputmode="decimal" required>
+                      <span class="suffix">%</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="fee-note">每项可填 0.00%–2.00%。实际基金净值通常已经扣除运作费；若输入的是基金历史收益率，请将三项运作费设为 0，避免重复扣除。</p>
+              </section>
             </div>
             <div class="actions">
               <button class="primary" type="submit">计算复利收益</button>
@@ -796,6 +895,46 @@
                 </div>
                 <div class="field-note">每笔定投从实际投入日开始，分别按其剩余持有年限计算年复利。</div>
               </div>
+              <section class="fee-card" aria-labelledby="dcaFeeTitle">
+                <div class="fee-head">
+                  <div>
+                    <h3 id="dcaFeeTitle">基金费率设置</h3>
+                    <p>每笔定投分别扣除买入费；运作费按各笔持有期估算。</p>
+                  </div>
+                  <span class="fee-total">年运作费合计 <b id="dcaOperatingTotal">0.00%</b></span>
+                </div>
+                <div class="fee-grid">
+                  <div class="field">
+                    <label for="dcaBuyFee">买入费率</label>
+                    <div class="input-wrap">
+                      <input class="with-suffix fee-input" id="dcaBuyFee" type="number" min="0" max="2" step="0.01" value="0.00" inputmode="decimal" required>
+                      <span class="suffix">%</span>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="dcaManagementFee">管理费率（年）</label>
+                    <div class="input-wrap">
+                      <input class="with-suffix fee-input" id="dcaManagementFee" type="number" min="0" max="2" step="0.01" value="0.00" inputmode="decimal" required>
+                      <span class="suffix">%</span>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="dcaCustodyFee">托管费率（年）</label>
+                    <div class="input-wrap">
+                      <input class="with-suffix fee-input" id="dcaCustodyFee" type="number" min="0" max="2" step="0.01" value="0.00" inputmode="decimal" required>
+                      <span class="suffix">%</span>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="dcaSalesFee">销售服务费（年）</label>
+                    <div class="input-wrap">
+                      <input class="with-suffix fee-input" id="dcaSalesFee" type="number" min="0" max="2" step="0.01" value="0.00" inputmode="decimal" required>
+                      <span class="suffix">%</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="fee-note">每项可填 0.00%–2.00%。买入费从每期金额中扣除，三项运作费合计后按每笔资金的实际持有期计算。</p>
+              </section>
             </div>
             <div class="actions">
               <button class="primary" type="submit">计算定投收益</button>
@@ -832,9 +971,17 @@
               <span class="eyebrow" id="compoundCountLabel">折算持有年限</span>
               <strong id="compoundCount">5.00 年</strong>
             </div>
+            <div class="metric fee-metric">
+              <span class="eyebrow">累计买入费</span>
+              <strong id="compoundBuyFee">¥0.00</strong>
+            </div>
+            <div class="metric fee-metric">
+              <span class="eyebrow">运作费影响（估算）</span>
+              <strong id="compoundOperatingFee">¥0.00</strong>
+            </div>
           </div>
           <button class="copy-btn" id="copyCompound" type="button">复制计算结果</button>
-          <p class="result-note">这是基于固定年化收益率的数学估算，未计入基金费率、税费、分红税、汇率、通胀及市场波动，不构成投资建议。</p>
+          <p class="result-note">买入费按每笔投入金额直接扣除；三项运作费按年合计，并从固定毛收益率中作近似扣减。“运作费影响”包含费用及其造成的少计复利，不等同于基金公司账单。未计入卖出费、交易佣金、税费、分红税、汇率、通胀及市场波动，不构成投资建议。</p>
         </aside>
       </div>
     </section>
@@ -1045,7 +1192,7 @@
 
     <footer>
       <span>单文件离线网页 · 可直接复制到其他电脑使用</span>
-      <span>年化收益率范围：1%–20%</span>
+      <span>年化收益率范围：1%–20% · 单项费率范围：0%–2%</span>
     </footer>
   </main>
 
@@ -1061,8 +1208,8 @@
       let priceCopyText = '';
 
       const presets = {
-        lump: { start: '2020-01-01', end: '2025-01-01', amount: 100000, rate: 10 },
-        dca: { start: '2020-01-01', end: '2025-01-01', amount: 2000, rate: 10, frequency: 'monthly', timing: 'beginning' },
+        lump: { start: '2020-01-01', end: '2025-01-01', amount: 100000, rate: 10, buyFee: 0, managementFee: 0, custodyFee: 0, salesFee: 0 },
+        dca: { start: '2020-01-01', end: '2025-01-01', amount: 2000, rate: 10, frequency: 'monthly', timing: 'beginning', buyFee: 0, managementFee: 0, custodyFee: 0, salesFee: 0 },
         price: { start: '2026-05-29', end: '2026-08-03', startPrice: 248.743, endPrice: 173.9 }
       };
 
@@ -1219,6 +1366,43 @@
         });
       }
 
+      const feeDefinitions = [
+        ['buyFee', 'BuyFee', '买入费率'],
+        ['managementFee', 'ManagementFee', '管理费率（年）'],
+        ['custodyFee', 'CustodyFee', '托管费率（年）'],
+        ['salesFee', 'SalesFee', '销售服务费（年）']
+      ];
+
+      function readFeeSettings(prefix) {
+        const values = {};
+        let error = '';
+        feeDefinitions.forEach(([key, suffix, label]) => {
+          const input = $(`${prefix}${suffix}`);
+          const value = Number(input.value);
+          const valid = Number.isFinite(value) && value >= 0 && value <= 2;
+          input.classList.toggle('invalid', !valid);
+          if (!valid && !error) error = `${label}必须在 0.00% 到 2.00% 之间。`;
+          values[key] = value;
+        });
+        values.annualFee = values.managementFee + values.custodyFee + values.salesFee;
+        $(`${prefix}OperatingTotal`).textContent = Number.isFinite(values.annualFee) ? `${values.annualFee.toFixed(2)}%` : '—';
+        return { ...values, error };
+      }
+
+      function setFeePreset(prefix, preset) {
+        feeDefinitions.forEach(([key, suffix]) => {
+          $(`${prefix}${suffix}`).value = Number(preset[key]).toFixed(2);
+        });
+      }
+
+      function effectiveAnnualRate(grossRate, annualFee) {
+        return ((1 + grossRate / 100) * (1 - annualFee / 100) - 1) * 100;
+      }
+
+      function feeDetailText(fees) {
+        return `买入费 ${fees.buyFee.toFixed(2)}%；管理费 ${fees.managementFee.toFixed(2)}%/年；托管费 ${fees.custodyFee.toFixed(2)}%/年；销售服务费 ${fees.salesFee.toFixed(2)}%/年`;
+      }
+
       function yearFraction(start, end) {
         const duration = calendarDuration(start, end);
         return duration.years + duration.months / 12 + duration.days / YEAR_DAYS;
@@ -1228,12 +1412,12 @@
         return Math.pow(1 + ratePercent / 100, yearFraction(start, end));
       }
 
-      function renderCompound({ title, rate, start, end, invested, final, countLabel, countValue, detail }) {
+      function renderCompound({ title, rate, netRate, start, end, invested, final, countLabel, countValue, detail, fees, buyFeeAmount, operatingFeeImpact }) {
         const days = dayDiff(start, end);
         const profit = final - invested;
         const totalReturn = invested > 0 ? profit / invested * 100 : 0;
         $('compoundResultTitle').textContent = title;
-        $('compoundRatePill').textContent = `年化 ${rate.toFixed(1)}%`;
+        $('compoundRatePill').textContent = fees.annualFee > 0 ? `费后年化 ${netRate.toFixed(2)}%` : `年化 ${rate.toFixed(1)}%`;
         $('compoundFinal').textContent = formatMoney(final);
         $('compoundDuration').textContent = `持有 ${durationText(start, end)} · 共 ${days.toLocaleString('zh-CN')} 天`;
         $('compoundInvested').textContent = formatMoney(invested);
@@ -1241,15 +1425,21 @@
         $('compoundReturn').textContent = formatPercent(totalReturn);
         $('compoundCountLabel').textContent = countLabel;
         $('compoundCount').textContent = countValue;
+        $('compoundBuyFee').textContent = formatMoney(buyFeeAmount);
+        $('compoundOperatingFee').textContent = formatMoney(operatingFeeImpact);
         setTrendClass($('compoundProfit'), profit);
         setTrendClass($('compoundReturn'), totalReturn);
 
         compoundCopyText = [
           `【${title}】`,
           `区间：${dateDisplay(start)} 至 ${dateDisplay(end)}（${durationText(start, end)}，${days}天）`,
-          `预期年化收益率：${rate.toFixed(1)}%`,
+          `预期毛年化收益率：${rate.toFixed(1)}%`,
+          `估算费后年化收益率：${netRate.toFixed(2)}%`,
+          `费率：${feeDetailText(fees)}`,
           detail,
           `累计投入：${formatMoney(invested)}`,
+          `累计买入费：${formatMoney(buyFeeAmount)}`,
+          `运作费影响（估算）：${formatMoney(operatingFeeImpact)}`,
           `期末总金额：${formatMoney(final)}`,
           `复利收益：${formatMoney(profit, true)}`,
           `累计收益率：${formatPercent(totalReturn)}`
@@ -1260,19 +1450,26 @@
         const dateCheck = validateDates($('lumpStart').value, $('lumpEnd').value);
         const principal = Number($('lumpPrincipal').value);
         const rate = Number($('lumpRate').value);
-        let error = dateCheck.error || '';
+        const fees = readFeeSettings('lump');
+        let error = dateCheck.error || fees.error || '';
         if (!error && (!Number.isFinite(principal) || principal <= 0)) error = '一次性本金必须大于 0。';
         if (!error && (!Number.isFinite(rate) || rate < 1 || rate > 20)) error = '年化收益率必须在 1% 到 20% 之间。';
         showError('lumpError', error);
         if (error) return false;
 
-        const final = principal * compoundFactor(rate, dateCheck.start, dateCheck.end);
+        const netRate = effectiveAnnualRate(rate, fees.annualFee);
+        const buyFeeAmount = principal * fees.buyFee / 100;
+        const netPrincipal = principal - buyFeeAmount;
+        const feeFreeFinal = netPrincipal * compoundFactor(rate, dateCheck.start, dateCheck.end);
+        const final = netPrincipal * compoundFactor(netRate, dateCheck.start, dateCheck.end);
+        const operatingFeeImpact = Math.max(0, feeFreeFinal - final);
         renderCompound({
-          title: '一次性投入结果', rate, start: dateCheck.start, end: dateCheck.end,
+          title: '一次性投入结果', rate, netRate, start: dateCheck.start, end: dateCheck.end,
           invested: principal, final,
           countLabel: '折算持有年限',
           countValue: `${yearFraction(dateCheck.start, dateCheck.end).toFixed(2)} 年`,
-          detail: `一次性本金：${formatMoney(principal)}`
+          detail: `一次性本金：${formatMoney(principal)}；扣除买入费后实际参与复利：${formatMoney(netPrincipal)}`,
+          fees, buyFeeAmount, operatingFeeImpact
         });
         return true;
       }
@@ -1299,9 +1496,10 @@
         const dateCheck = validateDates($('dcaStart').value, $('dcaEnd').value);
         const amount = Number($('dcaAmount').value);
         const rate = Number($('dcaRate').value);
+        const fees = readFeeSettings('dca');
         const frequency = $('dcaFrequency').value;
         const timing = $('dcaTiming').value;
-        let error = dateCheck.error || '';
+        let error = dateCheck.error || fees.error || '';
         if (!error && (!Number.isFinite(amount) || amount <= 0)) error = '每期定投金额必须大于 0。';
         if (!error && (!Number.isFinite(rate) || rate < 1 || rate > 20)) error = '年化收益率必须在 1% 到 20% 之间。';
         if (error) {
@@ -1316,13 +1514,19 @@
         }
         showError('dcaError', '');
         const invested = amount * dates.length;
-        const final = dates.reduce((sum, date) => sum + amount * compoundFactor(rate, date, dateCheck.end), 0);
+        const netRate = effectiveAnnualRate(rate, fees.annualFee);
+        const netAmount = amount * (1 - fees.buyFee / 100);
+        const buyFeeAmount = invested * fees.buyFee / 100;
+        const feeFreeFinal = dates.reduce((sum, date) => sum + netAmount * compoundFactor(rate, date, dateCheck.end), 0);
+        const final = dates.reduce((sum, date) => sum + netAmount * compoundFactor(netRate, date, dateCheck.end), 0);
+        const operatingFeeImpact = Math.max(0, feeFreeFinal - final);
         renderCompound({
-          title: '定期定投结果', rate, start: dateCheck.start, end: dateCheck.end,
+          title: '定期定投结果', rate, netRate, start: dateCheck.start, end: dateCheck.end,
           invested, final,
           countLabel: '投入期数',
           countValue: `${dates.length.toLocaleString('zh-CN')} 期`,
-          detail: `${frequencyName(frequency)}定投：${formatMoney(amount)} × ${dates.length}期（${timing === 'beginning' ? '起始日首次投入' : '首期结束时投入'}）`
+          detail: `${frequencyName(frequency)}定投：${formatMoney(amount)} × ${dates.length}期（${timing === 'beginning' ? '起始日首次投入' : '首期结束时投入'}）；每期扣除买入费后参与复利：${formatMoney(netAmount)}`,
+          fees, buyFeeAmount, operatingFeeImpact
         });
         return true;
       }
@@ -1486,6 +1690,15 @@
       document.querySelectorAll('#lumpForm input').forEach((el) => el.addEventListener('change', calculateLump));
       document.querySelectorAll('#dcaForm input, #dcaForm select').forEach((el) => el.addEventListener('change', calculateDca));
       document.querySelectorAll('#priceForm input').forEach((el) => el.addEventListener('change', calculatePrice));
+      document.querySelectorAll('.fee-input').forEach((input) => {
+        input.addEventListener('input', () => {
+          (input.id.startsWith('lump') ? calculateLump : calculateDca)();
+        });
+        input.addEventListener('blur', () => {
+          const value = Number(input.value);
+          if (Number.isFinite(value) && value >= 0 && value <= 2) input.value = value.toFixed(2);
+        });
+      });
 
       document.querySelectorAll('[data-reset]').forEach((button) => {
         button.addEventListener('click', () => {
@@ -1494,11 +1707,13 @@
           if (target === 'lump') {
             $('lumpStart').value = preset.start; $('lumpEnd').value = preset.end;
             $('lumpPrincipal').value = preset.amount; $('lumpRate').value = preset.rate; $('lumpRateRange').value = preset.rate;
+            setFeePreset('lump', preset);
             calculateLump();
           } else if (target === 'dca') {
             $('dcaStart').value = preset.start; $('dcaEnd').value = preset.end; $('dcaAmount').value = preset.amount;
             $('dcaRate').value = preset.rate; $('dcaRateRange').value = preset.rate;
             $('dcaFrequency').value = preset.frequency; $('dcaTiming').value = preset.timing;
+            setFeePreset('dca', preset);
             calculateDca();
           } else {
             $('priceStartDate').value = preset.start; $('priceEndDate').value = preset.end;
