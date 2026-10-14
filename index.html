@@ -1,0 +1,1528 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#0b3b34">
+  <title>复利与涨跌计算器</title>
+  <meta name="description" content="离线计算一次性本金、定期定投的年复利收益，以及两个日期和股价之间的涨跌幅。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b3b34'/%3E%3Cpath d='M15 44V20a5 5 0 0 1 5-5h24a5 5 0 0 1 5 5v24a5 5 0 0 1-5 5H20a5 5 0 0 1-5-5Z' fill='%23fff' opacity='.13'/%3E%3Cpath d='m19 39 9-9 7 6 11-13' fill='none' stroke='%23e7b86d' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M39 23h7v7' fill='none' stroke='%23e7b86d' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --ink: #102a2a;
+      --muted: #61706e;
+      --forest: #0b3b34;
+      --forest-2: #145b4e;
+      --mint: #e5f3ee;
+      --cream: #f7f3ea;
+      --paper: #fffdf8;
+      --line: #d8dfdb;
+      --gold: #e7b86d;
+      --rise: #087f5b;
+      --fall: #c54136;
+      --shadow: 0 18px 55px rgba(18, 44, 39, .09);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 4%, rgba(231, 184, 109, .20), transparent 28rem),
+        linear-gradient(180deg, #fbfaf6 0, #eef4f1 100%);
+      font-family: "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+      font-variant-numeric: tabular-nums;
+    }
+
+    button, input, select { font: inherit; }
+
+    button { cursor: pointer; }
+
+    .shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 44px 0 58px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 32px;
+      align-items: end;
+      margin-bottom: 28px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 17px; }
+
+    .logo {
+      width: 62px;
+      height: 62px;
+      flex: 0 0 auto;
+      filter: drop-shadow(0 9px 15px rgba(11, 59, 52, .15));
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Songti SC", "STSong", serif;
+      font-size: clamp(30px, 4vw, 46px);
+      letter-spacing: -.035em;
+      line-height: 1.08;
+    }
+
+    .subtitle {
+      max-width: 720px;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .privacy {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border: 1px solid rgba(11, 59, 52, .13);
+      border-radius: 999px;
+      color: var(--forest);
+      background: rgba(255, 255, 255, .62);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .privacy::before {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--rise);
+      content: "";
+      box-shadow: 0 0 0 4px rgba(8, 127, 91, .12);
+    }
+
+    .main-tabs {
+      display: flex;
+      gap: 6px;
+      width: fit-content;
+      margin: 0 0 18px;
+      padding: 5px;
+      border: 1px solid rgba(11, 59, 52, .10);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, .65);
+    }
+
+    .tab-btn {
+      min-width: 138px;
+      padding: 11px 17px;
+      border: 0;
+      border-radius: 11px;
+      color: var(--muted);
+      background: transparent;
+      font-weight: 650;
+      transition: .2s ease;
+    }
+
+    .tab-btn[aria-selected="true"] {
+      color: white;
+      background: var(--forest);
+      box-shadow: 0 7px 17px rgba(11, 59, 52, .18);
+    }
+
+    .panel {
+      overflow: hidden;
+      border: 1px solid rgba(11, 59, 52, .10);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .96);
+      box-shadow: var(--shadow);
+    }
+
+    .panel[hidden], .mode-panel[hidden] { display: none; }
+
+    .panel-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(360px, .92fr);
+      min-height: 590px;
+    }
+
+    .form-side { padding: 30px; }
+
+    .result-side {
+      display: flex;
+      flex-direction: column;
+      padding: 30px;
+      border-left: 1px solid var(--line);
+      background: linear-gradient(145deg, #f4f7f2 0%, #e9f2ed 100%);
+    }
+
+    .section-kicker {
+      margin: 0 0 5px;
+      color: var(--forest-2);
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    h2 { margin: 0; font-size: 24px; letter-spacing: -.025em; }
+
+    .section-desc {
+      margin: 9px 0 25px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .mode-btn {
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      color: var(--muted);
+      background: white;
+      font-weight: 700;
+    }
+
+    .mode-btn[aria-selected="true"] {
+      border-color: var(--forest);
+      color: var(--forest);
+      background: var(--mint);
+      box-shadow: inset 0 0 0 1px var(--forest);
+    }
+
+    .fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 17px;
+    }
+
+    .field { min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      margin: 0 0 8px;
+      color: #29433f;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .input-wrap { position: relative; }
+
+    input, select {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid #ccd7d2;
+      border-radius: 12px;
+      outline: none;
+      color: var(--ink);
+      background: #fff;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    input { padding: 11px 14px; }
+    select { padding: 11px 38px 11px 14px; }
+
+    input:focus, select:focus {
+      border-color: var(--forest-2);
+      box-shadow: 0 0 0 4px rgba(20, 91, 78, .11);
+    }
+
+    input.invalid { border-color: var(--fall); }
+
+    .prefix, .suffix {
+      position: absolute;
+      top: 50%;
+      color: #7a8986;
+      pointer-events: none;
+      transform: translateY(-50%);
+    }
+
+    .prefix { left: 14px; }
+    .suffix { right: 14px; }
+    .with-prefix { padding-left: 36px; }
+    .with-suffix { padding-right: 42px; }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 104px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      min-height: 36px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      accent-color: var(--forest-2);
+      box-shadow: none;
+    }
+
+    .range-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2px;
+      color: #899591;
+      font-size: 11px;
+    }
+
+    .field-note {
+      margin-top: 7px;
+      color: #7a8986;
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .actions { display: flex; gap: 10px; margin-top: 24px; }
+
+    .primary, .secondary, .copy-btn {
+      min-height: 46px;
+      padding: 11px 18px;
+      border-radius: 12px;
+      font-weight: 750;
+    }
+
+    .primary {
+      flex: 1;
+      border: 1px solid var(--forest);
+      color: white;
+      background: var(--forest);
+      box-shadow: 0 9px 20px rgba(11, 59, 52, .18);
+    }
+
+    .primary:hover { background: #104a41; }
+
+    .secondary, .copy-btn {
+      border: 1px solid #cbd6d1;
+      color: var(--forest);
+      background: rgba(255, 255, 255, .82);
+    }
+
+    .summary-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .summary-top h3 { margin: 0; font-size: 16px; }
+
+    .rate-pill {
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--forest);
+      background: rgba(255, 255, 255, .8);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .hero-result {
+      padding: 23px;
+      border: 1px solid rgba(11, 59, 52, .11);
+      border-radius: 19px;
+      background: var(--forest);
+      color: white;
+      box-shadow: 0 15px 36px rgba(11, 59, 52, .18);
+    }
+
+    .hero-result .eyebrow { color: rgba(255, 255, 255, .68); }
+
+    .eyebrow {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .big-number {
+      display: block;
+      overflow-wrap: anywhere;
+      font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+      font-feature-settings: "lnum" 1, "tnum" 1;
+      font-size: clamp(34px, 5vw, 48px);
+      font-weight: 760;
+      line-height: 1.05;
+      letter-spacing: -.035em;
+    }
+
+    .hero-result small {
+      display: block;
+      margin-top: 11px;
+      color: rgba(255, 255, 255, .7);
+      line-height: 1.55;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+      margin-top: 12px;
+    }
+
+    .metric {
+      min-height: 105px;
+      padding: 17px;
+      border: 1px solid rgba(11, 59, 52, .10);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .72);
+    }
+
+    .metric strong {
+      display: block;
+      overflow-wrap: anywhere;
+      color: var(--ink);
+      font-size: 23px;
+      line-height: 1.2;
+    }
+
+    .metric strong.positive { color: var(--rise); }
+    .metric strong.negative { color: var(--fall); }
+
+    .result-note {
+      margin: auto 0 0;
+      padding-top: 20px;
+      color: #657571;
+      font-size: 11px;
+      line-height: 1.65;
+    }
+
+    .copy-btn { width: 100%; margin-top: 14px; }
+
+    .copy-btn.copied { border-color: var(--rise); color: var(--rise); }
+
+    .error-box {
+      display: none;
+      margin-top: 14px;
+      padding: 11px 13px;
+      border: 1px solid rgba(197, 65, 54, .22);
+      border-radius: 10px;
+      color: #a62d26;
+      background: #fff0ee;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .error-box.show { display: block; }
+
+    .method-card {
+      margin-top: 18px;
+      padding: 18px 20px;
+      border: 1px solid rgba(11, 59, 52, .09);
+      border-radius: 17px;
+      background: rgba(255, 255, 255, .55);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .method-card strong { color: var(--ink); }
+
+    .history-wrap { padding: 30px; }
+
+    .history-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 22px;
+    }
+
+    .history-head .section-desc { max-width: 700px; margin-bottom: 0; }
+
+    .history-legend {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .history-legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+    .history-legend i {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .history-legend .up { background: #d84f45; }
+    .history-legend .down { background: #249366; }
+
+    .index-switch {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 9px;
+      max-width: 820px;
+      margin-bottom: 22px;
+    }
+
+    .index-btn {
+      padding: 13px 18px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      color: var(--muted);
+      background: white;
+      font-weight: 750;
+    }
+
+    .index-btn[aria-selected="true"] {
+      border-color: var(--forest);
+      color: white;
+      background: var(--forest);
+      box-shadow: 0 8px 18px rgba(11, 59, 52, .16);
+    }
+
+    .index-view[hidden] { display: none; }
+
+    .index-title-row {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 15px;
+    }
+
+    .index-title-row h3 { margin: 0; font-size: 22px; }
+
+    .index-title-row p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .history-period {
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--forest);
+      background: var(--mint);
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .return-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 14px;
+      border-radius: 20px;
+      background: #26302d;
+    }
+
+    .return-cell {
+      display: flex;
+      min-height: 132px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 12px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 12px;
+      color: white;
+      text-align: center;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+    }
+
+    .return-cell.gain { background: #d84f45; }
+    .return-cell.loss { background: #249366; }
+    .return-cell.flat { background: #78827f; }
+
+    .return-year {
+      margin-bottom: 9px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      opacity: .9;
+    }
+
+    .level-flow {
+      display: grid;
+      width: 100%;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      gap: 7px;
+    }
+
+    .level-point { min-width: 0; }
+
+    .level-point small {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 10px;
+      font-weight: 650;
+      opacity: .72;
+    }
+
+    .level-point b {
+      display: block;
+      overflow: hidden;
+      font-size: clamp(12px, 1.55vw, 16px);
+      line-height: 1.2;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .level-arrow {
+      margin-top: 13px;
+      font-size: 17px;
+      opacity: .75;
+    }
+
+    .return-rate {
+      margin-top: 12px;
+      font-size: clamp(18px, 2.3vw, 24px);
+      line-height: 1.1;
+      letter-spacing: -.02em;
+    }
+
+    .history-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 11px;
+      margin-top: 13px;
+    }
+
+    .history-stat {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+    }
+
+    .history-stat span {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .history-stat strong {
+      color: var(--forest);
+      font-size: 25px;
+      line-height: 1.15;
+    }
+
+    .history-source {
+      margin: 15px 2px 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.65;
+    }
+
+    .history-source a { color: var(--forest-2); text-underline-offset: 2px; }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      margin-top: 18px;
+      padding: 0 5px;
+      color: #768480;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 840px) {
+      .hero { grid-template-columns: 1fr; gap: 16px; }
+      .privacy { width: fit-content; }
+      .panel-grid { grid-template-columns: 1fr; }
+      .result-side { border-top: 1px solid var(--line); border-left: 0; }
+      .history-head { align-items: flex-start; flex-direction: column; }
+      .return-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 570px) {
+      .shell { width: min(100% - 20px, 1120px); padding-top: 24px; }
+      .brand { align-items: flex-start; }
+      .logo { width: 52px; height: 52px; }
+      .main-tabs { width: 100%; }
+      .tab-btn { min-width: 0; flex: 1; padding-inline: 9px; }
+      .form-side, .result-side { padding: 22px 18px; }
+      .history-wrap { padding: 22px 18px; }
+      .fields { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .metrics { grid-template-columns: 1fr; }
+      .index-title-row { align-items: flex-start; flex-direction: column; }
+      .index-switch { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .return-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 10px; }
+      .return-cell { min-height: 126px; padding-inline: 9px; }
+      .level-flow { gap: 4px; }
+      .level-point b { font-size: 12px; }
+      .history-summary { grid-template-columns: 1fr; }
+      .actions { flex-direction: column; }
+      footer { flex-direction: column; gap: 5px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <div class="brand">
+          <svg class="logo" viewBox="0 0 64 64" role="img" aria-label="复利与涨跌计算器图标">
+            <rect width="64" height="64" rx="16" fill="#0b3b34"/>
+            <path d="M15 44V20a5 5 0 0 1 5-5h24a5 5 0 0 1 5 5v24a5 5 0 0 1-5 5H20a5 5 0 0 1-5-5Z" fill="#fff" opacity=".13"/>
+            <path d="m19 39 9-9 7 6 11-13" fill="none" stroke="#e7b86d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M39 23h7v7" fill="none" stroke="#e7b86d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div>
+            <h1>复利与涨跌计算器</h1>
+            <p class="subtitle">用统一的年化收益率口径，估算一次性本金或定期投入的长期复利，并快速比较两个日期间的股价变化。</p>
+          </div>
+        </div>
+      </div>
+      <div class="privacy">离线运行 · 数据不上传</div>
+    </header>
+
+    <nav class="main-tabs" aria-label="计算器类型">
+      <button class="tab-btn" type="button" data-tab="compound" aria-selected="true">复利收益</button>
+      <button class="tab-btn" type="button" data-tab="price" aria-selected="false">股价涨跌</button>
+      <button class="tab-btn" type="button" data-tab="history" aria-selected="false">指数收益</button>
+    </nav>
+
+    <section class="panel" id="compoundPanel">
+      <div class="panel-grid">
+        <div class="form-side">
+          <p class="section-kicker">Compound growth</p>
+          <h2>年复利收益</h2>
+          <p class="section-desc">收益率按年化复利处理。先计算完整日历年和月，不足月的部分再按实际天数折算。</p>
+
+          <div class="mode-switch" aria-label="投资方式">
+            <button class="mode-btn" type="button" data-mode="lump" aria-selected="true">一次性本金</button>
+            <button class="mode-btn" type="button" data-mode="dca" aria-selected="false">定期定投</button>
+          </div>
+
+          <form id="lumpForm" class="mode-panel" novalidate>
+            <div class="fields">
+              <div class="field">
+                <label for="lumpStart">起始日期</label>
+                <input id="lumpStart" type="date" value="2020-01-01" required>
+              </div>
+              <div class="field">
+                <label for="lumpEnd">结束日期</label>
+                <input id="lumpEnd" type="date" value="2025-01-01" required>
+              </div>
+              <div class="field full">
+                <label for="lumpPrincipal">一次性本金</label>
+                <div class="input-wrap">
+                  <span class="prefix">¥</span>
+                  <input class="with-prefix" id="lumpPrincipal" type="number" min="0.01" step="100" value="100000" inputmode="decimal" required>
+                </div>
+              </div>
+              <div class="field full">
+                <label for="lumpRateRange">预期年化收益率</label>
+                <div class="range-row">
+                  <div>
+                    <input id="lumpRateRange" type="range" min="1" max="20" step="0.1" value="10" aria-label="预期年化收益率滑块">
+                    <div class="range-labels"><span>1%</span><span>20%</span></div>
+                  </div>
+                  <div class="input-wrap">
+                    <input class="with-suffix" id="lumpRate" type="number" min="1" max="20" step="0.1" value="10" inputmode="decimal" required>
+                    <span class="suffix">%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="primary" type="submit">计算复利收益</button>
+              <button class="secondary" type="button" data-reset="lump">恢复示例</button>
+            </div>
+            <div class="error-box" id="lumpError" role="alert"></div>
+          </form>
+
+          <form id="dcaForm" class="mode-panel" hidden novalidate>
+            <div class="fields">
+              <div class="field">
+                <label for="dcaStart">起始日期</label>
+                <input id="dcaStart" type="date" value="2020-01-01" required>
+              </div>
+              <div class="field">
+                <label for="dcaEnd">结束日期</label>
+                <input id="dcaEnd" type="date" value="2025-01-01" required>
+              </div>
+              <div class="field full">
+                <label for="dcaAmount">每期定投金额</label>
+                <div class="input-wrap">
+                  <span class="prefix">¥</span>
+                  <input class="with-prefix" id="dcaAmount" type="number" min="0.01" step="100" value="2000" inputmode="decimal" required>
+                </div>
+              </div>
+              <div class="field">
+                <label for="dcaFrequency">定投频率</label>
+                <select id="dcaFrequency">
+                  <option value="monthly" selected>每月</option>
+                  <option value="weekly">每周</option>
+                  <option value="yearly">每年</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="dcaTiming">首次投入时间</label>
+                <select id="dcaTiming">
+                  <option value="beginning" selected>起始日投入</option>
+                  <option value="ending">首期结束时投入</option>
+                </select>
+                <div class="field-note">结束日若正好是计划投入日，也会计入一期。</div>
+              </div>
+              <div class="field full">
+                <label for="dcaRateRange">预期年化收益率</label>
+                <div class="range-row">
+                  <div>
+                    <input id="dcaRateRange" type="range" min="1" max="20" step="0.1" value="10" aria-label="预期年化收益率滑块">
+                    <div class="range-labels"><span>1%</span><span>20%</span></div>
+                  </div>
+                  <div class="input-wrap">
+                    <input class="with-suffix" id="dcaRate" type="number" min="1" max="20" step="0.1" value="10" inputmode="decimal" required>
+                    <span class="suffix">%</span>
+                  </div>
+                </div>
+                <div class="field-note">每笔定投从实际投入日开始，分别按其剩余持有年限计算年复利。</div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="primary" type="submit">计算定投收益</button>
+              <button class="secondary" type="button" data-reset="dca">恢复示例</button>
+            </div>
+            <div class="error-box" id="dcaError" role="alert"></div>
+          </form>
+        </div>
+
+        <aside class="result-side" aria-live="polite">
+          <div class="summary-top">
+            <h3 id="compoundResultTitle">一次性投入结果</h3>
+            <span class="rate-pill" id="compoundRatePill">年化 10.0%</span>
+          </div>
+          <div class="hero-result">
+            <span class="eyebrow">期末总金额</span>
+            <strong class="big-number" id="compoundFinal">¥161,051.00</strong>
+            <small id="compoundDuration">持有 5年 · 共 1,827 天</small>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <span class="eyebrow">累计投入</span>
+              <strong id="compoundInvested">¥100,000.00</strong>
+            </div>
+            <div class="metric">
+              <span class="eyebrow">复利收益</span>
+              <strong class="positive" id="compoundProfit">+¥61,051.00</strong>
+            </div>
+            <div class="metric">
+              <span class="eyebrow">累计收益率</span>
+              <strong class="positive" id="compoundReturn">+61.05%</strong>
+            </div>
+            <div class="metric">
+              <span class="eyebrow" id="compoundCountLabel">折算持有年限</span>
+              <strong id="compoundCount">5.00 年</strong>
+            </div>
+          </div>
+          <button class="copy-btn" id="copyCompound" type="button">复制计算结果</button>
+          <p class="result-note">这是基于固定年化收益率的数学估算，未计入基金费率、税费、分红税、汇率、通胀及市场波动，不构成投资建议。</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="panel" id="pricePanel" hidden>
+      <div class="panel-grid">
+        <div class="form-side">
+          <p class="section-kicker">Price change</p>
+          <h2>股价涨跌幅</h2>
+          <p class="section-desc">输入两个日期及对应价格，计算自然日间隔、价格变化额和累计涨跌幅。</p>
+          <form id="priceForm" novalidate>
+            <div class="fields">
+              <div class="field">
+                <label for="priceStartDate">起始日期</label>
+                <input id="priceStartDate" type="date" value="2026-05-29" required>
+              </div>
+              <div class="field">
+                <label for="priceEndDate">结束日期</label>
+                <input id="priceEndDate" type="date" value="2026-08-03" required>
+              </div>
+              <div class="field">
+                <label for="startPrice">起始价格</label>
+                <input id="startPrice" type="number" min="0.000001" step="any" value="248.743" inputmode="decimal" required>
+              </div>
+              <div class="field">
+                <label for="endPrice">结束价格</label>
+                <input id="endPrice" type="number" min="0" step="any" value="173.9" inputmode="decimal" required>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="primary" type="submit">计算涨跌幅</button>
+              <button class="secondary" type="button" id="swapPrice">反向计算涨跌</button>
+              <button class="secondary" type="button" data-reset="price">恢复示例</button>
+            </div>
+            <div class="error-box" id="priceError" role="alert"></div>
+          </form>
+          <div class="method-card">
+            <strong>计算口径</strong><br>
+            涨跌幅 =（结束价格 − 起始价格）÷ 起始价格 × 100%；自然日间隔不重复计算起始日。
+          </div>
+        </div>
+
+        <aside class="result-side" aria-live="polite">
+          <div class="summary-top">
+            <h3>区间变化结果</h3>
+            <span class="rate-pill" id="priceTrendPill">下跌</span>
+          </div>
+          <div class="hero-result">
+            <span class="eyebrow">累计涨跌幅</span>
+            <strong class="big-number" id="priceChangeRate">−30.09%</strong>
+            <small id="priceRangeText">2026/05/29 → 2026/08/03</small>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <span class="eyebrow">自然日间隔</span>
+              <strong id="priceDays">66 天</strong>
+            </div>
+            <div class="metric">
+              <span class="eyebrow">周数换算</span>
+              <strong id="priceWeeks">9 周 3 天</strong>
+            </div>
+            <div class="metric">
+              <span class="eyebrow">价格变化额</span>
+              <strong class="negative" id="priceDelta">−74.843</strong>
+            </div>
+            <div class="metric">
+              <span class="eyebrow">结束价格</span>
+              <strong id="priceEndResult">173.9</strong>
+            </div>
+          </div>
+          <button class="copy-btn" id="copyPrice" type="button">复制计算结果</button>
+          <p class="result-note">价格可输入股票、指数或基金净值。本工具只计算两点之间的变化，不包含期间分红或现金派息。</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="panel" id="historyPanel" hidden>
+      <div class="history-wrap">
+        <div class="history-head">
+          <div>
+            <p class="section-kicker">Historical returns</p>
+            <h2>全球主要指数年度收益</h2>
+            <p class="section-desc">每张卡片依次显示“年初基准点位（上年末收盘）→ 当年末收盘 → 年度收益率”。纳斯达克100、标普500和日经225展示 1986–2025 年；沪深300从 2005 年开始。均为价格指数，不包含分红。</p>
+          </div>
+          <div class="history-legend" aria-label="颜色说明">
+            <span><i class="up"></i>上涨年份</span>
+            <span><i class="down"></i>下跌年份</span>
+          </div>
+        </div>
+
+        <div class="index-switch" aria-label="指数选择">
+          <button class="index-btn" type="button" data-index="nasdaq" aria-selected="true">纳斯达克100</button>
+          <button class="index-btn" type="button" data-index="sp500" aria-selected="false">标普500</button>
+          <button class="index-btn" type="button" data-index="nikkei" aria-selected="false">日经225</button>
+          <button class="index-btn" type="button" data-index="csi300" aria-selected="false">沪深300</button>
+        </div>
+
+        <article class="index-view" id="nasdaqView">
+          <div class="index-title-row">
+            <div>
+              <h3>纳斯达克100年度价格收益率</h3>
+              <p>Nasdaq-100 Price Return Index（NDX）</p>
+            </div>
+            <span class="history-period">1986–2025 · 40年</span>
+          </div>
+          <div class="return-grid" id="nasdaqGrid" aria-label="纳斯达克100近40年年度收益率"></div>
+          <div class="history-summary">
+            <div class="history-stat">
+              <span>40年复合年化收益率（CAGR）</span>
+              <strong id="nasdaqCagr">14.03%</strong>
+            </div>
+            <div class="history-stat">
+              <span>区间累计复利收益</span>
+              <strong id="nasdaqCumulative">+18,986.74%</strong>
+            </div>
+            <div class="history-stat">
+              <span>上涨年份</span>
+              <strong id="nasdaqPositive">33 / 40</strong>
+            </div>
+          </div>
+          <p class="history-source">点位来自 Nasdaq 官方历史数据导出，年度结果与官方年度价格收益资料交叉核对。来源：<a href="https://indexes.nasdaq.com/Index/History/NDX" target="_blank" rel="noreferrer">Nasdaq NDX Historical Data</a>、<a href="https://indexes.nasdaq.com/docs/NDX%20Extended%20Presentation.pdf" target="_blank" rel="noreferrer">Nasdaq 年度价格收益</a>，截至 2025-12-31。</p>
+        </article>
+
+        <article class="index-view" id="sp500View" hidden>
+          <div class="index-title-row">
+            <div>
+              <h3>标普500年度价格收益率</h3>
+              <p>S&amp;P 500 Price Return Index（SPX）</p>
+            </div>
+            <span class="history-period">1986–2025 · 40年</span>
+          </div>
+          <div class="return-grid" id="sp500Grid" aria-label="标普500近40年年度收益率"></div>
+          <div class="history-summary">
+            <div class="history-stat">
+              <span>40年复合年化收益率（CAGR）</span>
+              <strong id="sp500Cagr">9.08%</strong>
+            </div>
+            <div class="history-stat">
+              <span>区间累计复利收益</span>
+              <strong id="sp500Cumulative">+3,140.01%</strong>
+            </div>
+            <div class="history-stat">
+              <span>上涨年份</span>
+              <strong id="sp500Positive">30 / 40</strong>
+            </div>
+          </div>
+          <p class="history-source">点位按各年最后一个交易日的 S&amp;P 500 价格指数收盘值整理，年度收益与 S&amp;P DJI 官方资料逐年核对。来源：<a href="https://www.spglobal.com/spdji/en/indices/equity/sp-500/" target="_blank" rel="noreferrer">S&amp;P 500 官方页面</a>、<a href="https://www.spglobal.com/spdji/en/commentary/article/us-equities-market-attributes" target="_blank" rel="noreferrer">S&amp;P DJI 年度市场资料</a>，截至 2025-12-31。</p>
+        </article>
+
+        <article class="index-view" id="nikkeiView" hidden>
+          <div class="index-title-row">
+            <div>
+              <h3>日经225年度价格收益率</h3>
+              <p>Nikkei Stock Average（Nikkei 225）</p>
+            </div>
+            <span class="history-period">1986–2025 · 40年</span>
+          </div>
+          <div class="return-grid" id="nikkeiGrid" aria-label="日经225近40年年度收益率"></div>
+          <div class="history-summary">
+            <div class="history-stat">
+              <span>40年复合年化收益率（CAGR）</span>
+              <strong id="nikkeiCagr">3.42%</strong>
+            </div>
+            <div class="history-stat">
+              <span>区间累计复利收益</span>
+              <strong id="nikkeiCumulative">+283.88%</strong>
+            </div>
+            <div class="history-stat">
+              <span>上涨年份</span>
+              <strong id="nikkeiPositive">25 / 40</strong>
+            </div>
+          </div>
+          <p class="history-source">点位与年度收益按 Nikkei 官方年度历史数据核对。来源：<a href="https://indexes.nikkei.co.jp/en/nkave/archives/data?list=annually" target="_blank" rel="noreferrer">Nikkei Indexes 年度历史数据</a>，截至 2025-12-30。</p>
+        </article>
+
+        <article class="index-view" id="csi300View" hidden>
+          <div class="index-title-row">
+            <div>
+              <h3>沪深300年度价格收益率</h3>
+              <p>CSI 300 Price Return Index（000300）</p>
+            </div>
+            <span class="history-period">2005–2025 · 21年</span>
+          </div>
+          <div class="return-grid" id="csi300Grid" aria-label="沪深300自发布以来年度收益率"></div>
+          <div class="history-summary">
+            <div class="history-stat">
+              <span>21年复合年化收益率（CAGR）</span>
+              <strong id="csi300Cagr">7.57%</strong>
+            </div>
+            <div class="history-stat">
+              <span>区间累计复利收益</span>
+              <strong id="csi300Cumulative">+362.99%</strong>
+            </div>
+            <div class="history-stat">
+              <span>上涨年份</span>
+              <strong id="csi300Positive">11 / 21</strong>
+            </div>
+          </div>
+          <p class="history-source">沪深300基日为 2004-12-31（基点 1000），正式发布于 2005-04-08。2005 年卡片使用基点 1000 至年末 923.45 点，因此并非完整的发布后日历年。来源：<a href="https://oss-ch.csindex.com.cn/static/html/csindex/public/uploads/indices/detail/files/zh_CN/000300factsheet.pdf" target="_blank" rel="noreferrer">中证指数官方资料</a>、<a href="https://www.sse.com.cn/aboutus/publication/monthly/index/" target="_blank" rel="noreferrer">上海证券交易所统计资料</a>，截至 2025-12-31。</p>
+        </article>
+
+        <div class="method-card">
+          <strong>这里为什么只保留复合收益</strong><br>
+          年度收益率 = 年末收盘点位 ÷ 年初基准点位 − 1；区间累计复利收益 = 最后点位 ÷ 起始点位 − 1；CAGR 是把整段累计变化折算成每年的复利速度。所有指数统一采用价格指数口径，不计股息再投资。历史表现不代表未来收益。
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>单文件离线网页 · 可直接复制到其他电脑使用</span>
+      <span>年化收益率范围：1%–20%</span>
+    </footer>
+  </main>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const DAY_MS = 86400000;
+      const YEAR_DAYS = 365.2425;
+      const $ = (id) => document.getElementById(id);
+      let activeMode = 'lump';
+      let compoundCopyText = '';
+      let priceCopyText = '';
+
+      const presets = {
+        lump: { start: '2020-01-01', end: '2025-01-01', amount: 100000, rate: 10 },
+        dca: { start: '2020-01-01', end: '2025-01-01', amount: 2000, rate: 10, frequency: 'monthly', timing: 'beginning' },
+        price: { start: '2026-05-29', end: '2026-08-03', startPrice: 248.743, endPrice: 173.9 }
+      };
+
+      const historicalReturns = {
+        nasdaq: { startYear: 1986, base: 132.29, closes: [
+          141.41, 156.25, 177.41, 223.84, 200.53, 330.86, 360.19, 398.28, 404.27, 576.23,
+          821.36, 990.80, 1836.01, 3707.82, 2341.70, 1577.05, 984.36, 1467.92, 1621.12, 1645.20,
+          1756.90, 2084.93, 1211.65, 1860.31, 2217.86, 2277.83, 2660.93, 3592.00, 4236.28, 4593.27,
+          4863.62, 6396.42, 6329.96, 8733.07, 12888.28, 16320.08, 10939.76, 16825.93, 21012.17, 25249.85
+        ]},
+        sp500: { startYear: 1986, base: 211.28, closes: [
+          242.17, 247.08, 277.72, 353.40, 330.22, 417.09, 435.71, 466.45, 459.27, 615.93,
+          740.74, 970.43, 1229.23, 1469.25, 1320.28, 1148.08, 879.82, 1111.92, 1211.92, 1248.29,
+          1418.30, 1468.36, 903.25, 1115.10, 1257.64, 1257.60, 1426.19, 1848.36, 2058.90, 2043.94,
+          2238.83, 2673.61, 2506.85, 3230.78, 3756.07, 4766.18, 3839.50, 4769.83, 5881.63, 6845.50
+        ]},
+        nikkei: { startYear: 1986, base: 13113.32, closes: [
+          18701.30, 21564.00, 30159.00, 38915.87, 23848.71, 22983.77, 16924.95, 17417.24, 19723.06, 19868.15,
+          19361.35, 15258.74, 13842.17, 18934.34, 13785.69, 10542.62, 8578.95, 10676.64, 11488.76, 16111.43,
+          17225.83, 15307.78, 8859.56, 10546.44, 10228.92, 8455.35, 10395.18, 16291.31, 17450.77, 19033.71,
+          19114.37, 22764.94, 20014.77, 23656.62, 27444.17, 28791.71, 26094.50, 33464.17, 39894.54, 50339.48
+        ]},
+        csi300: { startYear: 2005, base: 1000, closes: [
+          923.45, 2041.05, 5338.27, 1817.72, 3575.68, 3128.26, 2345.74, 2522.95, 2330.03, 3533.71,
+          3731.00, 3310.08, 4030.85, 3010.65, 4096.58, 5211.29, 4940.37, 3871.63, 3431.11, 3934.91,
+          4629.94
+        ]}
+      };
+
+      function parseDate(value) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+        const [y, m, d] = value.split('-').map(Number);
+        const date = new Date(Date.UTC(y, m - 1, d));
+        return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d ? date : null;
+      }
+
+      function toDateInput(date) {
+        return date.toISOString().slice(0, 10);
+      }
+
+      function dayDiff(start, end) {
+        return Math.round((end.getTime() - start.getTime()) / DAY_MS);
+      }
+
+      function daysInMonth(year, monthIndex) {
+        return new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
+      }
+
+      function addMonths(date, count) {
+        const sourceDay = date.getUTCDate();
+        const totalMonths = date.getUTCFullYear() * 12 + date.getUTCMonth() + count;
+        const year = Math.floor(totalMonths / 12);
+        const month = ((totalMonths % 12) + 12) % 12;
+        const day = Math.min(sourceDay, daysInMonth(year, month));
+        return new Date(Date.UTC(year, month, day));
+      }
+
+      function addYears(date, count) {
+        const year = date.getUTCFullYear() + count;
+        const month = date.getUTCMonth();
+        const day = Math.min(date.getUTCDate(), daysInMonth(year, month));
+        return new Date(Date.UTC(year, month, day));
+      }
+
+      function calendarDuration(start, end) {
+        let years = end.getUTCFullYear() - start.getUTCFullYear();
+        let anchor = addYears(start, years);
+        if (anchor > end) {
+          years -= 1;
+          anchor = addYears(start, years);
+        }
+        let months = (end.getUTCFullYear() - anchor.getUTCFullYear()) * 12 + end.getUTCMonth() - anchor.getUTCMonth();
+        let monthAnchor = addMonths(anchor, months);
+        if (monthAnchor > end) {
+          months -= 1;
+          monthAnchor = addMonths(anchor, months);
+        }
+        const days = dayDiff(monthAnchor, end);
+        return { years, months, days };
+      }
+
+      function durationText(start, end) {
+        const d = calendarDuration(start, end);
+        const parts = [];
+        if (d.years) parts.push(`${d.years}年`);
+        if (d.months) parts.push(`${d.months}个月`);
+        if (d.days || !parts.length) parts.push(`${d.days}天`);
+        return parts.join('');
+      }
+
+      function formatMoney(value, signed = false) {
+        const sign = signed ? (value > 0 ? '+' : value < 0 ? '−' : '') : (value < 0 ? '−' : '');
+        return `${sign}¥${Math.abs(value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+
+      function formatNumber(value, maxDigits = 3, signed = false) {
+        const sign = signed ? (value > 0 ? '+' : value < 0 ? '−' : '') : (value < 0 ? '−' : '');
+        return sign + Math.abs(value).toLocaleString('zh-CN', { maximumFractionDigits: maxDigits });
+      }
+
+      function formatPercent(value, signed = true) {
+        const sign = signed ? (value > 0 ? '+' : value < 0 ? '−' : '') : '';
+        return `${sign}${Math.abs(value).toFixed(2)}%`;
+      }
+
+      function formatHistoricalPercent(value) {
+        const sign = value > 0 ? '+' : value < 0 ? '−' : '';
+        return `${sign}${Math.abs(value).toFixed(2)}%`;
+      }
+
+      function formatIndexLevel(value) {
+        return value.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function formatLargePercent(value) {
+        const sign = value > 0 ? '+' : value < 0 ? '−' : '';
+        return `${sign}${Math.abs(value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+      }
+
+      function dateDisplay(date) {
+        return toDateInput(date).replaceAll('-', '/');
+      }
+
+      function setTrendClass(element, value) {
+        element.classList.toggle('positive', value > 0);
+        element.classList.toggle('negative', value < 0);
+      }
+
+      function showError(id, message) {
+        const box = $(id);
+        box.textContent = message;
+        box.classList.toggle('show', Boolean(message));
+      }
+
+      function validateDates(startValue, endValue) {
+        const start = parseDate(startValue);
+        const end = parseDate(endValue);
+        if (!start || !end) return { error: '请填写有效的起始日期和结束日期。' };
+        if (end < start) return { error: '结束日期不能早于起始日期。' };
+        return { start, end, days: dayDiff(start, end) };
+      }
+
+      function bindRate(rangeId, numberId, recalc) {
+        const range = $(rangeId);
+        const number = $(numberId);
+        range.addEventListener('input', () => {
+          number.value = range.value;
+          recalc();
+        });
+        number.addEventListener('input', () => {
+          const value = Number(number.value);
+          if (Number.isFinite(value) && value >= 1 && value <= 20) range.value = String(value);
+          recalc();
+        });
+      }
+
+      function yearFraction(start, end) {
+        const duration = calendarDuration(start, end);
+        return duration.years + duration.months / 12 + duration.days / YEAR_DAYS;
+      }
+
+      function compoundFactor(ratePercent, start, end) {
+        return Math.pow(1 + ratePercent / 100, yearFraction(start, end));
+      }
+
+      function renderCompound({ title, rate, start, end, invested, final, countLabel, countValue, detail }) {
+        const days = dayDiff(start, end);
+        const profit = final - invested;
+        const totalReturn = invested > 0 ? profit / invested * 100 : 0;
+        $('compoundResultTitle').textContent = title;
+        $('compoundRatePill').textContent = `年化 ${rate.toFixed(1)}%`;
+        $('compoundFinal').textContent = formatMoney(final);
+        $('compoundDuration').textContent = `持有 ${durationText(start, end)} · 共 ${days.toLocaleString('zh-CN')} 天`;
+        $('compoundInvested').textContent = formatMoney(invested);
+        $('compoundProfit').textContent = formatMoney(profit, true);
+        $('compoundReturn').textContent = formatPercent(totalReturn);
+        $('compoundCountLabel').textContent = countLabel;
+        $('compoundCount').textContent = countValue;
+        setTrendClass($('compoundProfit'), profit);
+        setTrendClass($('compoundReturn'), totalReturn);
+
+        compoundCopyText = [
+          `【${title}】`,
+          `区间：${dateDisplay(start)} 至 ${dateDisplay(end)}（${durationText(start, end)}，${days}天）`,
+          `预期年化收益率：${rate.toFixed(1)}%`,
+          detail,
+          `累计投入：${formatMoney(invested)}`,
+          `期末总金额：${formatMoney(final)}`,
+          `复利收益：${formatMoney(profit, true)}`,
+          `累计收益率：${formatPercent(totalReturn)}`
+        ].join('\n');
+      }
+
+      function calculateLump() {
+        const dateCheck = validateDates($('lumpStart').value, $('lumpEnd').value);
+        const principal = Number($('lumpPrincipal').value);
+        const rate = Number($('lumpRate').value);
+        let error = dateCheck.error || '';
+        if (!error && (!Number.isFinite(principal) || principal <= 0)) error = '一次性本金必须大于 0。';
+        if (!error && (!Number.isFinite(rate) || rate < 1 || rate > 20)) error = '年化收益率必须在 1% 到 20% 之间。';
+        showError('lumpError', error);
+        if (error) return false;
+
+        const final = principal * compoundFactor(rate, dateCheck.start, dateCheck.end);
+        renderCompound({
+          title: '一次性投入结果', rate, start: dateCheck.start, end: dateCheck.end,
+          invested: principal, final,
+          countLabel: '折算持有年限',
+          countValue: `${yearFraction(dateCheck.start, dateCheck.end).toFixed(2)} 年`,
+          detail: `一次性本金：${formatMoney(principal)}`
+        });
+        return true;
+      }
+
+      function contributionDates(start, end, frequency, timing) {
+        const dates = [];
+        let index = timing === 'beginning' ? 0 : 1;
+        for (let guard = 0; guard < 20000; guard += 1, index += 1) {
+          let date;
+          if (frequency === 'weekly') date = new Date(start.getTime() + index * 7 * DAY_MS);
+          else if (frequency === 'yearly') date = addYears(start, index);
+          else date = addMonths(start, index);
+          if (date > end) break;
+          dates.push(date);
+        }
+        return dates;
+      }
+
+      function frequencyName(value) {
+        return value === 'weekly' ? '每周' : value === 'yearly' ? '每年' : '每月';
+      }
+
+      function calculateDca() {
+        const dateCheck = validateDates($('dcaStart').value, $('dcaEnd').value);
+        const amount = Number($('dcaAmount').value);
+        const rate = Number($('dcaRate').value);
+        const frequency = $('dcaFrequency').value;
+        const timing = $('dcaTiming').value;
+        let error = dateCheck.error || '';
+        if (!error && (!Number.isFinite(amount) || amount <= 0)) error = '每期定投金额必须大于 0。';
+        if (!error && (!Number.isFinite(rate) || rate < 1 || rate > 20)) error = '年化收益率必须在 1% 到 20% 之间。';
+        if (error) {
+          showError('dcaError', error);
+          return false;
+        }
+
+        const dates = contributionDates(dateCheck.start, dateCheck.end, frequency, timing);
+        if (!dates.length) {
+          showError('dcaError', '所选区间内没有发生定投，请延长日期范围或改为“起始日投入”。');
+          return false;
+        }
+        showError('dcaError', '');
+        const invested = amount * dates.length;
+        const final = dates.reduce((sum, date) => sum + amount * compoundFactor(rate, date, dateCheck.end), 0);
+        renderCompound({
+          title: '定期定投结果', rate, start: dateCheck.start, end: dateCheck.end,
+          invested, final,
+          countLabel: '投入期数',
+          countValue: `${dates.length.toLocaleString('zh-CN')} 期`,
+          detail: `${frequencyName(frequency)}定投：${formatMoney(amount)} × ${dates.length}期（${timing === 'beginning' ? '起始日首次投入' : '首期结束时投入'}）`
+        });
+        return true;
+      }
+
+      function calculatePrice() {
+        const dateCheck = validateDates($('priceStartDate').value, $('priceEndDate').value);
+        const startPrice = Number($('startPrice').value);
+        const endPrice = Number($('endPrice').value);
+        let error = dateCheck.error || '';
+        if (!error && (!Number.isFinite(startPrice) || startPrice <= 0)) error = '起始价格必须大于 0。';
+        if (!error && (!Number.isFinite(endPrice) || endPrice < 0)) error = '结束价格不能小于 0。';
+        showError('priceError', error);
+        if (error) return false;
+
+        const delta = endPrice - startPrice;
+        const rate = delta / startPrice * 100;
+        const weeks = Math.floor(dateCheck.days / 7);
+        const remainDays = dateCheck.days % 7;
+        const trend = rate > 0 ? '上涨' : rate < 0 ? '下跌' : '持平';
+        $('priceChangeRate').textContent = formatPercent(rate);
+        $('priceRangeText').textContent = `${dateDisplay(dateCheck.start)} → ${dateDisplay(dateCheck.end)}`;
+        $('priceDays').textContent = `${dateCheck.days.toLocaleString('zh-CN')} 天`;
+        $('priceWeeks').textContent = `${weeks.toLocaleString('zh-CN')} 周 ${remainDays} 天`;
+        $('priceDelta').textContent = formatNumber(delta, 6, true);
+        $('priceEndResult').textContent = formatNumber(endPrice, 6);
+        $('priceTrendPill').textContent = trend;
+        setTrendClass($('priceChangeRate'), rate);
+        setTrendClass($('priceDelta'), delta);
+
+        priceCopyText = [
+          '【股价涨跌幅】',
+          `区间：${dateDisplay(dateCheck.start)} 至 ${dateDisplay(dateCheck.end)}`,
+          `自然日间隔：${dateCheck.days}天（${weeks}周${remainDays}天）`,
+          `起始价格：${formatNumber(startPrice, 6)}`,
+          `结束价格：${formatNumber(endPrice, 6)}`,
+          `价格变化额：${formatNumber(delta, 6, true)}`,
+          `累计涨跌幅：${formatPercent(rate)}`
+        ].join('\n');
+        return true;
+      }
+
+      function renderHistoryGrid(key) {
+        const series = historicalReturns[key];
+        const values = series.closes;
+        const grid = $(`${key}Grid`);
+        grid.textContent = '';
+        values.forEach((endLevel, index) => {
+          const year = series.startYear + index;
+          const startLevel = index === 0 ? series.base : values[index - 1];
+          const value = (endLevel / startLevel - 1) * 100;
+          const cell = document.createElement('div');
+          cell.className = `return-cell ${value > 0 ? 'gain' : value < 0 ? 'loss' : 'flat'}`;
+          cell.setAttribute('aria-label', `${year}年，年初基准 ${formatIndexLevel(startLevel)}，年末收盘 ${formatIndexLevel(endLevel)}，收益率 ${formatHistoricalPercent(value)}`);
+
+          const yearLabel = document.createElement('div');
+          yearLabel.className = 'return-year';
+          yearLabel.textContent = String(year);
+
+          const flow = document.createElement('div');
+          flow.className = 'level-flow';
+
+          const startPoint = document.createElement('div');
+          startPoint.className = 'level-point';
+          const startCaption = document.createElement('small');
+          startCaption.textContent = '年初基准';
+          const startValue = document.createElement('b');
+          startValue.textContent = formatIndexLevel(startLevel);
+          startPoint.append(startCaption, startValue);
+
+          const arrow = document.createElement('span');
+          arrow.className = 'level-arrow';
+          arrow.setAttribute('aria-hidden', 'true');
+          arrow.textContent = '→';
+
+          const endPoint = document.createElement('div');
+          endPoint.className = 'level-point';
+          const endCaption = document.createElement('small');
+          endCaption.textContent = '年末收盘';
+          const endValue = document.createElement('b');
+          endValue.textContent = formatIndexLevel(endLevel);
+          endPoint.append(endCaption, endValue);
+          flow.append(startPoint, arrow, endPoint);
+
+          const amount = document.createElement('strong');
+          amount.className = 'return-rate';
+          amount.textContent = formatHistoricalPercent(value);
+          cell.append(yearLabel, flow, amount);
+          grid.appendChild(cell);
+        });
+
+        const compounded = values[values.length - 1] / series.base;
+        const cagr = (Math.pow(compounded, 1 / values.length) - 1) * 100;
+        const cumulative = (compounded - 1) * 100;
+        const positive = values.filter((endLevel, index) => {
+          const startLevel = index === 0 ? series.base : values[index - 1];
+          return endLevel > startLevel;
+        }).length;
+        $(`${key}Cagr`).textContent = `${cagr.toFixed(2)}%`;
+        $(`${key}Cumulative`).textContent = formatLargePercent(cumulative);
+        $(`${key}Positive`).textContent = `${positive} / ${values.length}`;
+      }
+
+      async function copyText(text, button) {
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch (_) {
+          const area = document.createElement('textarea');
+          area.value = text;
+          area.style.position = 'fixed';
+          area.style.opacity = '0';
+          document.body.appendChild(area);
+          area.select();
+          document.execCommand('copy');
+          area.remove();
+        }
+        const original = button.textContent;
+        button.textContent = '已复制';
+        button.classList.add('copied');
+        window.setTimeout(() => {
+          button.textContent = original;
+          button.classList.remove('copied');
+        }, 1400);
+      }
+
+      document.querySelectorAll('.tab-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
+          const target = button.dataset.tab;
+          $('compoundPanel').hidden = target !== 'compound';
+          $('pricePanel').hidden = target !== 'price';
+          $('historyPanel').hidden = target !== 'history';
+        });
+      });
+
+      document.querySelectorAll('.index-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('.index-btn').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
+          const selectedIndex = button.dataset.index;
+          Object.keys(historicalReturns).forEach((key) => {
+            $(`${key}View`).hidden = key !== selectedIndex;
+          });
+        });
+      });
+
+      document.querySelectorAll('.mode-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+          activeMode = button.dataset.mode;
+          document.querySelectorAll('.mode-btn').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
+          $('lumpForm').hidden = activeMode !== 'lump';
+          $('dcaForm').hidden = activeMode !== 'dca';
+          activeMode === 'lump' ? calculateLump() : calculateDca();
+        });
+      });
+
+      $('lumpForm').addEventListener('submit', (event) => { event.preventDefault(); calculateLump(); });
+      $('dcaForm').addEventListener('submit', (event) => { event.preventDefault(); calculateDca(); });
+      $('priceForm').addEventListener('submit', (event) => { event.preventDefault(); calculatePrice(); });
+      bindRate('lumpRateRange', 'lumpRate', calculateLump);
+      bindRate('dcaRateRange', 'dcaRate', calculateDca);
+
+      document.querySelectorAll('#lumpForm input').forEach((el) => el.addEventListener('change', calculateLump));
+      document.querySelectorAll('#dcaForm input, #dcaForm select').forEach((el) => el.addEventListener('change', calculateDca));
+      document.querySelectorAll('#priceForm input').forEach((el) => el.addEventListener('change', calculatePrice));
+
+      document.querySelectorAll('[data-reset]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const target = button.dataset.reset;
+          const preset = presets[target];
+          if (target === 'lump') {
+            $('lumpStart').value = preset.start; $('lumpEnd').value = preset.end;
+            $('lumpPrincipal').value = preset.amount; $('lumpRate').value = preset.rate; $('lumpRateRange').value = preset.rate;
+            calculateLump();
+          } else if (target === 'dca') {
+            $('dcaStart').value = preset.start; $('dcaEnd').value = preset.end; $('dcaAmount').value = preset.amount;
+            $('dcaRate').value = preset.rate; $('dcaRateRange').value = preset.rate;
+            $('dcaFrequency').value = preset.frequency; $('dcaTiming').value = preset.timing;
+            calculateDca();
+          } else {
+            $('priceStartDate').value = preset.start; $('priceEndDate').value = preset.end;
+            $('startPrice').value = preset.startPrice; $('endPrice').value = preset.endPrice;
+            calculatePrice();
+          }
+        });
+      });
+
+      $('swapPrice').addEventListener('click', () => {
+        [$('startPrice').value, $('endPrice').value] = [$('endPrice').value, $('startPrice').value];
+        calculatePrice();
+      });
+
+      $('copyCompound').addEventListener('click', () => copyText(compoundCopyText, $('copyCompound')));
+      $('copyPrice').addEventListener('click', () => copyText(priceCopyText, $('copyPrice')));
+
+      calculateLump();
+      calculatePrice();
+      renderHistoryGrid('nasdaq');
+      renderHistoryGrid('sp500');
+      renderHistoryGrid('nikkei');
+      renderHistoryGrid('csi300');
+    })();
+  </script>
+</body>
+</html>
