@@ -868,9 +868,9 @@
               <div class="field">
                 <label for="dcaFrequency">定投频率</label>
                 <select id="dcaFrequency">
-                  <option value="monthly" selected>每月</option>
+                  <option value="daily">每日</option>
                   <option value="weekly">每周</option>
-                  <option value="yearly">每年</option>
+                  <option value="monthly" selected>每月</option>
                 </select>
               </div>
               <div class="field">
@@ -1479,8 +1479,8 @@
         let index = timing === 'beginning' ? 0 : 1;
         for (let guard = 0; guard < 20000; guard += 1, index += 1) {
           let date;
-          if (frequency === 'weekly') date = new Date(start.getTime() + index * 7 * DAY_MS);
-          else if (frequency === 'yearly') date = addYears(start, index);
+          if (frequency === 'daily') date = new Date(start.getTime() + index * DAY_MS);
+          else if (frequency === 'weekly') date = new Date(start.getTime() + index * 7 * DAY_MS);
           else date = addMonths(start, index);
           if (date > end) break;
           dates.push(date);
@@ -1489,7 +1489,7 @@
       }
 
       function frequencyName(value) {
-        return value === 'weekly' ? '每周' : value === 'yearly' ? '每年' : '每月';
+        return value === 'daily' ? '每日' : value === 'weekly' ? '每周' : '每月';
       }
 
       function calculateDca() {
