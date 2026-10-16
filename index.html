@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#0b3b34">
-  <title>复利与涨跌计算器</title>
+  <title>投资收益计算器</title>
   <meta name="description" content="计算一次性本金、定期定投的年复利收益和股价涨跌幅，并参考 VIX、VXN 的近5年分位调整定投金额。">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b3b34'/%3E%3Cpath d='M15 44V20a5 5 0 0 1 5-5h24a5 5 0 0 1 5 5v24a5 5 0 0 1-5 5H20a5 5 0 0 1-5-5Z' fill='%23fff' opacity='.13'/%3E%3Cpath d='m19 39 9-9 7 6 11-13' fill='none' stroke='%23e7b86d' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M39 23h7v7' fill='none' stroke='%23e7b86d' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <style>
@@ -642,6 +642,38 @@
 
     .previous-close small { opacity: .78; }
 
+    .reference-index-close {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      margin: -4px 0 18px;
+      padding: 13px 14px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, .10);
+    }
+
+    .reference-index-close span,
+    .reference-index-close small {
+      display: block;
+      color: rgba(255, 255, 255, .66);
+      font-size: 11px;
+    }
+
+    .reference-index-close strong {
+      display: block;
+      margin-top: 4px;
+      font-family: "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+      font-size: 21px;
+      font-weight: 760;
+      font-variant-numeric: lining-nums tabular-nums;
+      font-feature-settings: "lnum" 1, "tnum" 1;
+      line-height: 1.1;
+    }
+
+    .reference-index-close small { text-align: right; }
+
     .sentiment-stat-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1038,6 +1070,8 @@
       .sentiment-stat-grid, .update-policy { grid-template-columns: 1fr; }
       .sentiment-switch { grid-template-columns: 1fr; }
       .quote-main { align-items: flex-start; flex-direction: column; gap: 12px; }
+      .reference-index-close { grid-template-columns: 1fr; }
+      .reference-index-close small { text-align: left; }
       .actions { flex-direction: column; }
       .fee-card { padding: 15px; }
       .fee-head { align-items: flex-start; flex-direction: column; gap: 8px; }
@@ -1055,14 +1089,14 @@
     <header class="hero">
       <div>
         <div class="brand">
-          <svg class="logo" viewBox="0 0 64 64" role="img" aria-label="复利与涨跌计算器图标">
+          <svg class="logo" viewBox="0 0 64 64" role="img" aria-label="投资收益计算器图标">
             <rect width="64" height="64" rx="16" fill="#0b3b34"/>
             <path d="M15 44V20a5 5 0 0 1 5-5h24a5 5 0 0 1 5 5v24a5 5 0 0 1-5 5H20a5 5 0 0 1-5-5Z" fill="#fff" opacity=".13"/>
             <path d="m19 39 9-9 7 6 11-13" fill="none" stroke="#e7b86d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M39 23h7v7" fill="none" stroke="#e7b86d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <div>
-            <h1>复利与涨跌计算器</h1>
+            <h1>投资收益计算器</h1>
             <p class="subtitle">用统一的年化收益率口径，估算一次性本金或定期投入的长期复利，并快速比较两个日期间的股价变化。</p>
           </div>
         </div>
@@ -1410,11 +1444,19 @@
               <div class="quote-context">
                 <span class="quote-change" id="sentimentChange">—</span>
                 <span class="previous-close">
-                  前一交易日收盘
+                  <span id="sentimentPreviousLabel">VXN 前一交易日收盘</span>
                   <b id="sentimentPreviousClose">—</b>
                   <small id="sentimentPreviousDate">—</small>
                 </span>
               </div>
+            </div>
+
+            <div class="reference-index-close" aria-label="对应指数前一交易日收盘点位">
+              <div>
+                <span id="sentimentReferenceName">纳斯达克100 · NDX 前一交易日收盘</span>
+                <strong id="sentimentReferenceClose">—</strong>
+              </div>
+              <small id="sentimentReferenceDate">等待指数数据</small>
             </div>
 
             <div class="sentiment-stat-grid">
@@ -1464,7 +1506,7 @@
           <div class="update-item">
             <span>自动更新时点</span>
             <strong>纽约时间工作日 17:30<br>美股常规收盘后 90 分钟</strong>
-            <small>19:17 再做一次备用复查</small>
+            <small>19:17 复查恐慌指数；次日 00:30 校验指数点位</small>
           </div>
           <div class="update-item">
             <span>中国时间 · 夏令时</span>
@@ -1476,7 +1518,7 @@
           </div>
         </div>
 
-        <p class="sentiment-source">数据来自 <a href="https://www.cboe.com/tradable_products/vix/vix_historical_data" target="_blank" rel="noreferrer">Cboe Global Markets</a> 的 VIX、VXN 每日收盘历史数据；最后生成时间：<span id="sentimentGeneratedAt">—</span>。网页每次打开都会读取最新数据，保持打开时每15分钟检查一次；节假日无新收盘值时会沿用最近交易日数据。该模型只是纪律化定投的金额参考，不构成投资建议，也不保证在下跌中获得收益。</p>
+        <p class="sentiment-source">恐慌指数数据来自 <a href="https://www.cboe.com/tradable_products/vix/vix_historical_data" target="_blank" rel="noreferrer">Cboe Global Markets</a>；纳斯达克100与标普500收盘点位来自 <a href="https://fred.stlouisfed.org/series/NASDAQ100" target="_blank" rel="noreferrer">FRED NASDAQ100</a> 和 <a href="https://fred.stlouisfed.org/series/SP500" target="_blank" rel="noreferrer">FRED SP500</a>。最后生成时间：<span id="sentimentGeneratedAt">—</span>。网页每次打开都会读取最新数据，保持打开时每15分钟检查一次；节假日无新收盘值时会沿用最近交易日数据。该模型只是纪律化定投的金额参考，不构成投资建议，也不保证在下跌中获得收益。</p>
       </div>
     </section>
 
@@ -2017,8 +2059,17 @@
         $('sentimentChange').textContent = `${formatPercent(market.changePercent)} 较前一交易日`;
         $('sentimentChange').classList.toggle('positive', market.changePercent > 0);
         $('sentimentChange').classList.toggle('negative', market.changePercent < 0);
+        $('sentimentPreviousLabel').textContent = `${market.indicator} 前一交易日收盘`;
         $('sentimentPreviousClose').textContent = Number(market.previousClose).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         $('sentimentPreviousDate').textContent = market.previousAsOf ? `· ${market.previousAsOf}` : '';
+        const referenceIndex = market.referenceIndex;
+        $('sentimentReferenceName').textContent = referenceIndex
+          ? `${referenceIndex.name} · ${referenceIndex.symbol} 前一交易日收盘`
+          : `${market.indexName}前一交易日收盘`;
+        $('sentimentReferenceClose').textContent = referenceIndex
+          ? Number(referenceIndex.close).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          : '数据更新中';
+        $('sentimentReferenceDate').textContent = referenceIndex?.asOf || '等待指数数据';
         $('sentimentPercentile').textContent = `${market.percentile5y.toFixed(1)}%`;
         $('sentimentLabel').textContent = market.sentiment;
         $('sentimentSample').textContent = `${market.sampleSize.toLocaleString('zh-CN')} 天`;
