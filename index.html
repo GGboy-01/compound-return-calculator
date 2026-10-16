@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#0b3b34">
   <title>复利与涨跌计算器</title>
-  <meta name="description" content="离线计算一次性本金、定期定投的年复利收益，以及两个日期和股价之间的涨跌幅。">
+  <meta name="description" content="计算一次性本金、定期定投的年复利收益和股价涨跌幅，并参考 VIX、VXN 的近5年分位调整定投金额。">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b3b34'/%3E%3Cpath d='M15 44V20a5 5 0 0 1 5-5h24a5 5 0 0 1 5 5v24a5 5 0 0 1-5 5H20a5 5 0 0 1-5-5Z' fill='%23fff' opacity='.13'/%3E%3Cpath d='m19 39 9-9 7 6 11-13' fill='none' stroke='%23e7b86d' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M39 23h7v7' fill='none' stroke='%23e7b86d' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <style>
     :root {
@@ -486,6 +486,276 @@
 
     .method-card strong { color: var(--ink); }
 
+    .sentiment-wrap { padding: 30px; }
+
+    .sentiment-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 22px;
+    }
+
+    .sentiment-head .section-desc { max-width: 720px; margin-bottom: 0; }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      color: var(--forest);
+      background: var(--mint);
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .live-badge::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--rise);
+      content: "";
+    }
+
+    .sentiment-switch {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+      max-width: 650px;
+      margin-bottom: 18px;
+    }
+
+    .sentiment-index-btn {
+      padding: 13px 18px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      color: var(--muted);
+      background: white;
+      font-weight: 750;
+    }
+
+    .sentiment-index-btn[aria-selected="true"] {
+      border-color: var(--forest);
+      color: white;
+      background: var(--forest);
+      box-shadow: 0 8px 18px rgba(11, 59, 52, .16);
+    }
+
+    .sentiment-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(330px, .95fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .sentiment-card {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: white;
+    }
+
+    .sentiment-quote {
+      color: white;
+      border-color: transparent;
+      background: linear-gradient(145deg, #0b3b34 0%, #145b4e 100%);
+    }
+
+    .sentiment-quote-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .sentiment-quote h3 { margin: 0; font-size: 21px; }
+
+    .sentiment-quote .quote-subtitle {
+      margin: 6px 0 0;
+      color: rgba(255, 255, 255, .68);
+      font-size: 12px;
+    }
+
+    .indicator-tag {
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--forest);
+      background: var(--gold);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .quote-main {
+      display: flex;
+      align-items: end;
+      gap: 14px;
+      margin: 28px 0 22px;
+    }
+
+    .quote-main strong {
+      font-family: Georgia, "Songti SC", "STSong", serif;
+      font-size: clamp(43px, 7vw, 66px);
+      font-weight: 700;
+      line-height: .9;
+      letter-spacing: -.035em;
+    }
+
+    .quote-change {
+      margin-bottom: 4px;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .quote-change.positive { color: #79ddb7; }
+    .quote-change.negative { color: #ff9e96; }
+
+    .sentiment-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .sentiment-stat {
+      padding: 13px;
+      border: 1px solid rgba(255, 255, 255, .13);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .sentiment-stat span {
+      display: block;
+      margin-bottom: 5px;
+      color: rgba(255, 255, 255, .62);
+      font-size: 10px;
+    }
+
+    .sentiment-stat strong { font-size: 16px; }
+
+    .sentiment-gauge { margin-top: 22px; }
+
+    .gauge-track {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 3px;
+      height: 11px;
+    }
+
+    .gauge-track i { border-radius: 999px; }
+    .gauge-track i:nth-child(1) { background: #4c9d80; }
+    .gauge-track i:nth-child(2) { background: #79b588; }
+    .gauge-track i:nth-child(3) { background: #d5c76a; }
+    .gauge-track i:nth-child(4) { background: #df9e56; }
+    .gauge-track i:nth-child(5) { background: #d97052; }
+    .gauge-track i:nth-child(6) { background: #bd493f; }
+
+    .gauge-marker {
+      position: absolute;
+      top: -6px;
+      width: 4px;
+      height: 23px;
+      border-radius: 4px;
+      background: white;
+      box-shadow: 0 0 0 2px rgba(11, 59, 52, .45);
+      transform: translateX(-50%);
+      transition: left .25s ease;
+    }
+
+    .gauge-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      color: rgba(255, 255, 255, .62);
+      font-size: 10px;
+    }
+
+    .sentiment-card h3 { margin: 0 0 7px; }
+
+    .sentiment-card-desc {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .sentiment-formula {
+      margin: 14px 0 0;
+      padding: 11px 13px;
+      border-radius: 12px;
+      color: var(--forest);
+      background: var(--mint);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .suggested-amount {
+      margin: 18px 0 0;
+      padding: 20px;
+      border-radius: 17px;
+      color: white;
+      background: var(--forest);
+    }
+
+    .suggested-amount span { display: block; font-size: 12px; opacity: .68; }
+
+    .suggested-amount strong {
+      display: block;
+      margin: 7px 0 3px;
+      font-family: Georgia, "Songti SC", "STSong", serif;
+      font-size: clamp(34px, 5vw, 48px);
+      line-height: 1;
+      letter-spacing: -.025em;
+    }
+
+    .suggested-amount small { color: rgba(255, 255, 255, .72); }
+
+    .update-policy {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .update-item {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .58);
+    }
+
+    .update-item span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .update-item strong { font-size: 13px; line-height: 1.45; }
+
+    .sentiment-source {
+      margin: 15px 2px 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.65;
+    }
+
+    .sentiment-source a { color: var(--forest-2); text-underline-offset: 2px; }
+
+    .sentiment-error {
+      display: none;
+      margin-bottom: 16px;
+      padding: 11px 13px;
+      border: 1px solid rgba(197, 65, 54, .22);
+      border-radius: 10px;
+      color: #a62d26;
+      background: #fff0ee;
+      font-size: 12px;
+    }
+
+    .sentiment-error.show { display: block; }
+
     .history-wrap { padding: 30px; }
 
     .history-head {
@@ -699,6 +969,8 @@
       .panel-grid { grid-template-columns: 1fr; }
       .result-side { border-top: 1px solid var(--line); border-left: 0; }
       .history-head { align-items: flex-start; flex-direction: column; }
+      .sentiment-head { align-items: flex-start; flex-direction: column; }
+      .sentiment-layout { grid-template-columns: 1fr; }
       .return-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
 
@@ -710,6 +982,7 @@
       .tab-btn { min-width: 0; flex: 1; padding-inline: 9px; }
       .form-side, .result-side { padding: 22px 18px; }
       .history-wrap { padding: 22px 18px; }
+      .sentiment-wrap { padding: 22px 18px; }
       .fields { grid-template-columns: 1fr; }
       .field.full { grid-column: auto; }
       .metrics { grid-template-columns: 1fr; }
@@ -720,6 +993,8 @@
       .level-flow { gap: 4px; }
       .level-point b { font-size: 12px; }
       .history-summary { grid-template-columns: 1fr; }
+      .sentiment-stat-grid, .update-policy { grid-template-columns: 1fr; }
+      .sentiment-switch { grid-template-columns: 1fr; }
       .actions { flex-direction: column; }
       .fee-card { padding: 15px; }
       .fee-head { align-items: flex-start; flex-direction: column; gap: 8px; }
@@ -749,11 +1024,12 @@
           </div>
         </div>
       </div>
-      <div class="privacy">离线运行 · 数据不上传</div>
+      <div class="privacy">核心计算在本地完成 · 不上传输入数据</div>
     </header>
 
     <nav class="main-tabs" aria-label="计算器类型">
       <button class="tab-btn" type="button" data-tab="compound" aria-selected="true">复利收益</button>
+      <button class="tab-btn" type="button" data-tab="sentiment" aria-selected="false">市场情绪</button>
       <button class="tab-btn" type="button" data-tab="price" aria-selected="false">股价涨跌</button>
       <button class="tab-btn" type="button" data-tab="history" aria-selected="false">指数收益</button>
     </nav>
@@ -1058,6 +1334,101 @@
       </div>
     </section>
 
+    <section class="panel" id="sentimentPanel" hidden>
+      <div class="sentiment-wrap">
+        <div class="sentiment-head">
+          <div>
+            <p class="section-kicker">Market sentiment</p>
+            <h2>美股恐慌值与定投参考</h2>
+            <p class="section-desc">标普500参考 VIX，纳斯达克100参考 VXN。用最新收盘值在近5年每日收盘数据中的分位，调整你设定的基础定投金额；分位越高，代表相对恐慌程度越高。</p>
+          </div>
+          <div class="live-badge" id="sentimentFreshness">正在读取最新收盘数据</div>
+        </div>
+
+        <div class="sentiment-error" id="sentimentError" role="alert">暂时无法读取行情数据，复利和涨跌计算仍可正常使用。</div>
+
+        <div class="sentiment-switch" aria-label="恐慌指数选择">
+          <button class="sentiment-index-btn" type="button" data-sentiment-market="nasdaq100" aria-selected="true">纳斯达克100 · VXN</button>
+          <button class="sentiment-index-btn" type="button" data-sentiment-market="sp500" aria-selected="false">标普500 · VIX</button>
+        </div>
+
+        <div class="sentiment-layout">
+          <article class="sentiment-card sentiment-quote" aria-live="polite">
+            <div class="sentiment-quote-head">
+              <div>
+                <h3 id="sentimentMarketName">纳斯达克100市场情绪</h3>
+                <p class="quote-subtitle" id="sentimentAsOf">等待最新收盘数据</p>
+              </div>
+              <span class="indicator-tag" id="sentimentIndicator">VXN</span>
+            </div>
+
+            <div class="quote-main">
+              <strong id="sentimentClose">—</strong>
+              <span class="quote-change" id="sentimentChange">—</span>
+            </div>
+
+            <div class="sentiment-stat-grid">
+              <div class="sentiment-stat">
+                <span>近5年分位</span>
+                <strong id="sentimentPercentile">—</strong>
+              </div>
+              <div class="sentiment-stat">
+                <span>情绪区间</span>
+                <strong id="sentimentLabel">—</strong>
+              </div>
+              <div class="sentiment-stat">
+                <span>样本交易日</span>
+                <strong id="sentimentSample">—</strong>
+              </div>
+            </div>
+
+            <div class="sentiment-gauge" aria-label="近5年恐慌值分位刻度">
+              <div class="gauge-track">
+                <i></i><i></i><i></i><i></i><i></i><i></i>
+                <b class="gauge-marker" id="sentimentMarker" style="left: 50%"></b>
+              </div>
+              <div class="gauge-labels"><span>低恐慌</span><span>5年分位</span><span>高恐慌</span></div>
+            </div>
+          </article>
+
+          <article class="sentiment-card">
+            <h3>本期定投金额参考</h3>
+            <p class="sentiment-card-desc">先输入你在正常市场状态下计划投入的金额。系统只调整本期金额，不改变你的长期资产配置。</p>
+            <div class="field">
+              <label for="sentimentBaseAmount">基础定投金额</label>
+              <div class="input-wrap">
+                <span class="prefix">¥</span>
+                <input class="with-prefix" id="sentimentBaseAmount" type="number" min="1" step="100" value="2000" inputmode="decimal">
+              </div>
+            </div>
+            <div class="sentiment-formula">近5年分位对应系数：0–20% 为 0.75倍，20–40% 为 0.90倍，40–60% 为 1.00倍，60–80% 为 1.20倍，80–95% 为 1.50倍，95–100% 为 1.75倍。</div>
+            <div class="suggested-amount">
+              <span>本期建议投入参考</span>
+              <strong id="sentimentSuggested">—</strong>
+              <small id="sentimentMultiplier">等待数据</small>
+            </div>
+          </article>
+        </div>
+
+        <div class="update-policy" aria-label="数据更新时间说明">
+          <div class="update-item">
+            <span>自动更新时点</span>
+            <strong>纽约时间工作日 17:30<br>美股常规收盘后 90 分钟</strong>
+          </div>
+          <div class="update-item">
+            <span>中国时间 · 夏令时</span>
+            <strong>次日 05:30 左右<br>约每年3月至11月</strong>
+          </div>
+          <div class="update-item">
+            <span>中国时间 · 冬令时</span>
+            <strong>次日 06:30 左右<br>约每年11月至次年3月</strong>
+          </div>
+        </div>
+
+        <p class="sentiment-source">数据来自 <a href="https://www.cboe.com/tradable_products/vix/vix_historical_data" target="_blank" rel="noreferrer">Cboe Global Markets</a> 的 VIX、VXN 每日收盘历史数据；最后生成时间：<span id="sentimentGeneratedAt">—</span>。节假日无新收盘值时会沿用最近交易日数据。该模型只是纪律化定投的金额参考，不构成投资建议，也不保证在下跌中获得收益。</p>
+      </div>
+    </section>
+
     <section class="panel" id="historyPanel" hidden>
       <div class="history-wrap">
         <div class="history-head">
@@ -1191,7 +1562,7 @@
     </section>
 
     <footer>
-      <span>单文件离线网页 · 可直接复制到其他电脑使用</span>
+      <span>核心计算可离线使用 · 市场情绪数据联网自动更新</span>
       <span>年化收益率范围：1%–20% · 单项费率范围：0%–2%</span>
     </footer>
   </main>
@@ -1206,6 +1577,8 @@
       let activeMode = 'lump';
       let compoundCopyText = '';
       let priceCopyText = '';
+      let sentimentData = null;
+      let activeSentimentMarket = 'nasdaq100';
 
       const presets = {
         lump: { start: '2020-01-01', end: '2025-01-01', amount: 100000, rate: 10, buyFee: 0, managementFee: 0, custodyFee: 0, salesFee: 0 },
@@ -1568,6 +1941,73 @@
         return true;
       }
 
+      function formatChinaDateTime(value) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '—';
+        return new Intl.DateTimeFormat('zh-CN', {
+          timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', hour12: false
+        }).format(date).replaceAll('/', '-');
+      }
+
+      function renderSentiment() {
+        if (!sentimentData) return;
+        const market = sentimentData.markets[activeSentimentMarket];
+        if (!market) return;
+        const baseAmount = Number($('sentimentBaseAmount').value);
+        const validAmount = Number.isFinite(baseAmount) && baseAmount > 0;
+        const suggested = validAmount ? baseAmount * market.multiplier : 0;
+
+        $('sentimentMarketName').textContent = `${market.indexName}市场情绪`;
+        $('sentimentIndicator').textContent = market.indicator;
+        $('sentimentAsOf').textContent = `截至 ${market.asOf} 美股收盘`;
+        $('sentimentClose').textContent = market.close.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        $('sentimentChange').textContent = `${formatPercent(market.changePercent)} 较前一交易日`;
+        $('sentimentChange').classList.toggle('positive', market.changePercent > 0);
+        $('sentimentChange').classList.toggle('negative', market.changePercent < 0);
+        $('sentimentPercentile').textContent = `${market.percentile5y.toFixed(1)}%`;
+        $('sentimentLabel').textContent = market.sentiment;
+        $('sentimentSample').textContent = `${market.sampleSize.toLocaleString('zh-CN')} 天`;
+        $('sentimentMarker').style.left = `${Math.min(100, Math.max(0, market.percentile5y))}%`;
+        $('sentimentSuggested').textContent = validAmount ? formatMoney(suggested) : '请输入有效金额';
+        $('sentimentMultiplier').textContent = validAmount
+          ? `${formatMoney(baseAmount)} × ${market.multiplier.toFixed(2)}倍（${market.sentiment}）`
+          : '基础定投金额必须大于 0';
+        $('sentimentGeneratedAt').textContent = `${formatChinaDateTime(sentimentData.generatedAt)}（北京时间）`;
+        $('sentimentFreshness').textContent = `最新数据：${market.asOf}`;
+      }
+
+      async function loadMarketSentiment() {
+        const cacheKey = Math.floor(Date.now() / 300000);
+        const urls = [
+          `https://raw.githubusercontent.com/GGboy-01/compound-return-calculator/main/data/market-sentiment.json?v=${cacheKey}`,
+          `data/market-sentiment.json?v=${cacheKey}`
+        ];
+        let loaded = null;
+        for (const url of urls) {
+          try {
+            const response = await fetch(url, { cache: 'no-store' });
+            if (!response.ok) continue;
+            const candidate = await response.json();
+            if (candidate && candidate.markets && candidate.markets.nasdaq100 && candidate.markets.sp500) {
+              loaded = candidate;
+              break;
+            }
+          } catch (_) {
+            // 继续尝试备用地址；本地核心计算不依赖行情接口。
+          }
+        }
+
+        if (!loaded) {
+          $('sentimentError').classList.add('show');
+          $('sentimentFreshness').textContent = '行情数据暂不可用';
+          return;
+        }
+        sentimentData = loaded;
+        $('sentimentError').classList.remove('show');
+        renderSentiment();
+      }
+
       function renderHistoryGrid(key) {
         const series = historicalReturns[key];
         const values = series.closes;
@@ -1656,9 +2096,25 @@
           document.querySelectorAll('.tab-btn').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
           const target = button.dataset.tab;
           $('compoundPanel').hidden = target !== 'compound';
+          $('sentimentPanel').hidden = target !== 'sentiment';
           $('pricePanel').hidden = target !== 'price';
           $('historyPanel').hidden = target !== 'history';
         });
+      });
+
+      document.querySelectorAll('.sentiment-index-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+          activeSentimentMarket = button.dataset.sentimentMarket;
+          document.querySelectorAll('.sentiment-index-btn').forEach((item) => {
+            item.setAttribute('aria-selected', String(item === button));
+          });
+          renderSentiment();
+        });
+      });
+
+      $('sentimentBaseAmount').addEventListener('input', () => {
+        try { localStorage.setItem('sentimentBaseAmount', $('sentimentBaseAmount').value); } catch (_) {}
+        renderSentiment();
       });
 
       document.querySelectorAll('.index-btn').forEach((button) => {
@@ -1731,8 +2187,14 @@
       $('copyCompound').addEventListener('click', () => copyText(compoundCopyText, $('copyCompound')));
       $('copyPrice').addEventListener('click', () => copyText(priceCopyText, $('copyPrice')));
 
+      try {
+        const savedBaseAmount = Number(localStorage.getItem('sentimentBaseAmount'));
+        if (Number.isFinite(savedBaseAmount) && savedBaseAmount > 0) $('sentimentBaseAmount').value = String(savedBaseAmount);
+      } catch (_) {}
+
       calculateLump();
       calculatePrice();
+      loadMarketSentiment();
       renderHistoryGrid('nasdaq');
       renderHistoryGrid('sp500');
       renderHistoryGrid('nikkei');
@@ -1741,3 +2203,4 @@
   </script>
 </body>
 </html>
+
