@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 1,
-  "generatedAt": "2026-10-16T09:13:07.680Z",
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-16T13:24:21.276Z",
   "methodology": {
     "window": "5年交易日",
     "percentile": "当前收盘值在近5年每日收盘值中的经验分位",
@@ -35,15 +35,20 @@
     "timezone": "America/New_York",
     "scheduledLocalTime": "17:30",
     "backupLocalTime": "19:17",
+    "indexValidationLocalTime": "00:30（次一交易日）",
     "chinaDaylightTime": "次日 05:30",
     "chinaStandardTime": "次日 06:30",
     "browserRefreshMinutes": 15
   },
   "source": {
-    "name": "Cboe Global Markets",
-    "page": "https://www.cboe.com/tradable_products/vix/vix_historical_data",
+    "name": "Cboe Global Markets；Federal Reserve Bank of St. Louis (FRED)",
+    "cboePage": "https://www.cboe.com/tradable_products/vix/vix_historical_data",
     "vixCsv": "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
-    "vxnCsv": "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VXN_History.csv"
+    "vxnCsv": "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VXN_History.csv",
+    "sp500Page": "https://fred.stlouisfed.org/series/SP500",
+    "sp500Csv": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=SP500",
+    "nasdaq100Page": "https://fred.stlouisfed.org/series/NASDAQ100",
+    "nasdaq100Csv": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NASDAQ100"
   },
   "markets": {
     "sp500": {
@@ -58,7 +63,13 @@
       "sampleSize": 1288,
       "multiplier": 0.9,
       "sentiment": "偏平静",
-      "tier": "calm"
+      "tier": "calm",
+      "referenceIndex": {
+        "name": "标普500",
+        "symbol": "SPX",
+        "asOf": "2026-10-15",
+        "close": 7744.06
+      }
     },
     "nasdaq100": {
       "indexName": "纳斯达克100",
@@ -72,7 +83,13 @@
       "sampleSize": 1256,
       "multiplier": 1,
       "sentiment": "正常",
-      "tier": "normal"
+      "tier": "normal",
+      "referenceIndex": {
+        "name": "纳斯达克100",
+        "symbol": "NDX",
+        "asOf": "2026-10-15",
+        "close": 29935.59
+      }
     }
   }
 }
