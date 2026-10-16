@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -47,11 +47,34 @@ function tierFor(percentile) {
   return { multiplier: 1.75, sentiment: '极端恐慌', tier: 'extreme' };
 }
 
+function wait(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+async function fetchWithRetry(source, attempts = 4) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      const response = await fetch(source.url, {
+        headers: { 'user-agent': 'compound-return-calculator/1.0' },
+        signal: AbortSignal.timeout(20000)
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response;
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts) {
+        const delay = [2000, 5000, 10000][attempt - 1];
+        console.warn(`${source.indicator} 第 ${attempt} 次下载失败，${delay / 1000} 秒后重试。`);
+        await wait(delay);
+      }
+    }
+  }
+  throw new Error(`${source.indicator} 下载失败：${lastError?.message || '未知网络错误'}`);
+}
+
 async function fetchSeries(source) {
-  const response = await fetch(source.url, {
-    headers: { 'user-agent': 'compound-return-calculator/1.0' }
-  });
-  if (!response.ok) throw new Error(`${source.indicator} 下载失败：HTTP ${response.status}`);
+  const response = await fetchWithRetry(source);
 
   const rows = parseCsv(await response.text());
   if (rows.length < 2) throw new Error(`${source.indicator} 数据不足`);
@@ -84,9 +107,23 @@ for (const [key, source] of Object.entries(SOURCES)) {
   markets[key] = await fetchSeries(source);
 }
 
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const outputDir = path.join(projectRoot, 'data');
+const outputPath = path.join(outputDir, 'market-sentiment.json');
+let generatedAt = new Date().toISOString();
+
+try {
+  const previous = JSON.parse(await readFile(outputPath, 'utf8'));
+  if (JSON.stringify(previous.markets) === JSON.stringify(markets) && previous.generatedAt) {
+    generatedAt = previous.generatedAt;
+  }
+} catch (_) {
+  // 首次运行时没有旧文件，直接生成新数据。
+}
+
 const output = {
   schemaVersion: 1,
-  generatedAt: new Date().toISOString(),
+  generatedAt,
   methodology: {
     window: '5年交易日',
     percentile: '当前收盘值在近5年每日收盘值中的经验分位',
@@ -102,8 +139,10 @@ const output = {
   updatePolicy: {
     timezone: 'America/New_York',
     scheduledLocalTime: '17:30',
+    backupLocalTime: '19:00',
     chinaDaylightTime: '次日 05:30',
-    chinaStandardTime: '次日 06:30'
+    chinaStandardTime: '次日 06:30',
+    browserRefreshMinutes: 15
   },
   source: {
     name: 'Cboe Global Markets',
@@ -114,10 +153,8 @@ const output = {
   markets
 };
 
-const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const outputDir = path.join(projectRoot, 'data');
 await mkdir(outputDir, { recursive: true });
-await writeFile(path.join(outputDir, 'market-sentiment.json'), `${JSON.stringify(output, null, 2)}\n`, 'utf8');
+await writeFile(outputPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
 
 for (const market of Object.values(markets)) {
   console.log(`${market.indicator}: ${market.close}，5年分位 ${market.percentile5y}% → ${market.multiplier.toFixed(2)}x`);
