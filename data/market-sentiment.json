@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-16T09:13:07.680Z",
+  "methodology": {
+    "window": "5年交易日",
+    "percentile": "当前收盘值在近5年每日收盘值中的经验分位",
+    "tiers": [
+      {
+        "maxPercentile": 20,
+        "multiplier": 0.75
+      },
+      {
+        "maxPercentile": 40,
+        "multiplier": 0.9
+      },
+      {
+        "maxPercentile": 60,
+        "multiplier": 1
+      },
+      {
+        "maxPercentile": 80,
+        "multiplier": 1.2
+      },
+      {
+        "maxPercentile": 95,
+        "multiplier": 1.5
+      },
+      {
+        "maxPercentile": 100,
+        "multiplier": 1.75
+      }
+    ]
+  },
+  "updatePolicy": {
+    "timezone": "America/New_York",
+    "scheduledLocalTime": "17:30",
+    "chinaDaylightTime": "次日 05:30",
+    "chinaStandardTime": "次日 06:30"
+  },
+  "source": {
+    "name": "Cboe Global Markets",
+    "page": "https://www.cboe.com/tradable_products/vix/vix_historical_data",
+    "vixCsv": "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+    "vxnCsv": "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VXN_History.csv"
+  },
+  "markets": {
+    "sp500": {
+      "indexName": "标普500",
+      "indicator": "VIX",
+      "asOf": "2026-10-15",
+      "close": 16.46,
+      "previousClose": 16.87,
+      "changePercent": -2.43,
+      "percentile5y": 38.5,
+      "sampleSize": 1288,
+      "multiplier": 0.9,
+      "sentiment": "偏平静",
+      "tier": "calm"
+    },
+    "nasdaq100": {
+      "indexName": "纳斯达克100",
+      "indicator": "VXN",
+      "asOf": "2026-10-15",
+      "close": 22.89,
+      "previousClose": 22.7,
+      "changePercent": 0.84,
+      "percentile5y": 54,
+      "sampleSize": 1256,
+      "multiplier": 1,
+      "sentiment": "正常",
+      "tier": "normal"
+    }
+  }
+}
+
