@@ -92,6 +92,7 @@ async function fetchSeries(source) {
     indicator: source.indicator,
     asOf: latest.date.toISOString().slice(0, 10),
     close: round(latest.close),
+    previousAsOf: previous.date.toISOString().slice(0, 10),
     previousClose: round(previous.close),
     changePercent: round((latest.close / previous.close - 1) * 100),
     percentile5y: percentile,
