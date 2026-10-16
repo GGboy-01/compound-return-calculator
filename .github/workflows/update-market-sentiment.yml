@@ -7,6 +7,8 @@ on:
       timezone: 'America/New_York'
     - cron: '17 19 * * 1-5'
       timezone: 'America/New_York'
+    - cron: '30 0 * * 2-6'
+      timezone: 'America/New_York'
 
 permissions:
   contents: write
@@ -28,7 +30,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Download Cboe closing data
+      - name: Download Cboe and FRED closing data
         run: node scripts/update-market-data.mjs
 
       - name: Commit updated data
@@ -40,7 +42,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/market-sentiment.json
-          git commit -m "data: update VIX and VXN closes"
+          git commit -m "data: update market and index closes"
           git pull --rebase origin main
           git push
 
