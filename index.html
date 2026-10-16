@@ -734,6 +734,14 @@
 
     .update-item strong { font-size: 13px; line-height: 1.45; }
 
+    .update-item small {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
     .sentiment-source {
       margin: 15px 2px 0;
       color: var(--muted);
@@ -1414,6 +1422,7 @@
           <div class="update-item">
             <span>自动更新时点</span>
             <strong>纽约时间工作日 17:30<br>美股常规收盘后 90 分钟</strong>
+            <small>19:00 再做一次备用复查</small>
           </div>
           <div class="update-item">
             <span>中国时间 · 夏令时</span>
@@ -1425,7 +1434,7 @@
           </div>
         </div>
 
-        <p class="sentiment-source">数据来自 <a href="https://www.cboe.com/tradable_products/vix/vix_historical_data" target="_blank" rel="noreferrer">Cboe Global Markets</a> 的 VIX、VXN 每日收盘历史数据；最后生成时间：<span id="sentimentGeneratedAt">—</span>。节假日无新收盘值时会沿用最近交易日数据。该模型只是纪律化定投的金额参考，不构成投资建议，也不保证在下跌中获得收益。</p>
+        <p class="sentiment-source">数据来自 <a href="https://www.cboe.com/tradable_products/vix/vix_historical_data" target="_blank" rel="noreferrer">Cboe Global Markets</a> 的 VIX、VXN 每日收盘历史数据；最后生成时间：<span id="sentimentGeneratedAt">—</span>。网页每次打开都会读取最新数据，保持打开时每15分钟检查一次；节假日无新收盘值时会沿用最近交易日数据。该模型只是纪律化定投的金额参考，不构成投资建议，也不保证在下跌中获得收益。</p>
       </div>
     </section>
 
@@ -1579,6 +1588,7 @@
       let priceCopyText = '';
       let sentimentData = null;
       let activeSentimentMarket = 'nasdaq100';
+      let lastSentimentFetch = 0;
 
       const presets = {
         lump: { start: '2020-01-01', end: '2025-01-01', amount: 100000, rate: 10, buyFee: 0, managementFee: 0, custodyFee: 0, salesFee: 0 },
@@ -1978,6 +1988,7 @@
       }
 
       async function loadMarketSentiment() {
+        lastSentimentFetch = Date.now();
         const cacheKey = Math.floor(Date.now() / 300000);
         const urls = [
           `https://raw.githubusercontent.com/GGboy-01/compound-return-calculator/main/data/market-sentiment.json?v=${cacheKey}`,
@@ -2195,6 +2206,12 @@
       calculateLump();
       calculatePrice();
       loadMarketSentiment();
+      window.setInterval(() => {
+        if (!document.hidden) loadMarketSentiment();
+      }, 15 * 60 * 1000);
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && Date.now() - lastSentimentFetch > 5 * 60 * 1000) loadMarketSentiment();
+      });
       renderHistoryGrid('nasdaq');
       renderHistoryGrid('sp500');
       renderHistoryGrid('nikkei');
