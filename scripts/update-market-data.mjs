@@ -139,7 +139,7 @@ const output = {
   updatePolicy: {
     timezone: 'America/New_York',
     scheduledLocalTime: '17:30',
-    backupLocalTime: '19:00',
+    backupLocalTime: '19:17',
     chinaDaylightTime: '次日 05:30',
     chinaStandardTime: '次日 06:30',
     browserRefreshMinutes: 15
