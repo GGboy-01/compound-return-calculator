@@ -15,6 +15,23 @@ const SOURCES = {
   }
 };
 
+const INDEX_SOURCES = {
+  sp500: {
+    name: '标普500',
+    symbol: 'SPX',
+    seriesId: 'SP500',
+    page: 'https://fred.stlouisfed.org/series/SP500',
+    url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=SP500'
+  },
+  nasdaq100: {
+    name: '纳斯达克100',
+    symbol: 'NDX',
+    seriesId: 'NASDAQ100',
+    page: 'https://fred.stlouisfed.org/series/NASDAQ100',
+    url: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=NASDAQ100'
+  }
+};
+
 function parseDate(value) {
   const [month, day, year] = value.trim().split('/').map(Number);
   return new Date(Date.UTC(year, month - 1, day));
@@ -31,6 +48,17 @@ function parseCsv(csv) {
       close: Number(close)
     };
   }).filter((row) => Number.isFinite(row.close)).sort((a, b) => a.date - b.date);
+}
+
+function parseFredCsv(csv) {
+  return csv.trim().split(/\r?\n/).slice(1).map((line) => {
+    const [dateText, valueText] = line.split(',');
+    return {
+      date: new Date(`${dateText.trim()}T00:00:00Z`),
+      value: Number(valueText)
+    };
+  }).filter((row) => !Number.isNaN(row.date.getTime()) && Number.isFinite(row.value))
+    .sort((a, b) => a.date - b.date);
 }
 
 function round(value, digits = 2) {
@@ -52,6 +80,7 @@ function wait(milliseconds) {
 }
 
 async function fetchWithRetry(source, attempts = 4) {
+  const label = source.indicator || source.symbol || source.seriesId || '行情数据';
   let lastError;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
@@ -65,12 +94,12 @@ async function fetchWithRetry(source, attempts = 4) {
       lastError = error;
       if (attempt < attempts) {
         const delay = [2000, 5000, 10000][attempt - 1];
-        console.warn(`${source.indicator} 第 ${attempt} 次下载失败，${delay / 1000} 秒后重试。`);
+        console.warn(`${label} 第 ${attempt} 次下载失败，${delay / 1000} 秒后重试。`);
         await wait(delay);
       }
     }
   }
-  throw new Error(`${source.indicator} 下载失败：${lastError?.message || '未知网络错误'}`);
+  throw new Error(`${label} 下载失败：${lastError?.message || '未知网络错误'}`);
 }
 
 async function fetchSeries(source) {
@@ -103,9 +132,26 @@ async function fetchSeries(source) {
   };
 }
 
+async function fetchReferenceIndex(source) {
+  const response = await fetchWithRetry(source);
+  const rows = parseFredCsv(await response.text());
+  if (!rows.length) throw new Error(`${source.symbol} 数据不足`);
+  const latest = rows.at(-1);
+  return {
+    name: source.name,
+    symbol: source.symbol,
+    asOf: latest.date.toISOString().slice(0, 10),
+    close: round(latest.value)
+  };
+}
+
 const markets = {};
 for (const [key, source] of Object.entries(SOURCES)) {
-  markets[key] = await fetchSeries(source);
+  const [sentiment, referenceIndex] = await Promise.all([
+    fetchSeries(source),
+    fetchReferenceIndex(INDEX_SOURCES[key])
+  ]);
+  markets[key] = { ...sentiment, referenceIndex };
 }
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -123,7 +169,7 @@ try {
 }
 
 const output = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   generatedAt,
   methodology: {
     window: '5年交易日',
@@ -141,15 +187,20 @@ const output = {
     timezone: 'America/New_York',
     scheduledLocalTime: '17:30',
     backupLocalTime: '19:17',
+    indexValidationLocalTime: '00:30（次一交易日）',
     chinaDaylightTime: '次日 05:30',
     chinaStandardTime: '次日 06:30',
     browserRefreshMinutes: 15
   },
   source: {
-    name: 'Cboe Global Markets',
-    page: 'https://www.cboe.com/tradable_products/vix/vix_historical_data',
+    name: 'Cboe Global Markets；Federal Reserve Bank of St. Louis (FRED)',
+    cboePage: 'https://www.cboe.com/tradable_products/vix/vix_historical_data',
     vixCsv: SOURCES.sp500.url,
-    vxnCsv: SOURCES.nasdaq100.url
+    vxnCsv: SOURCES.nasdaq100.url,
+    sp500Page: INDEX_SOURCES.sp500.page,
+    sp500Csv: INDEX_SOURCES.sp500.url,
+    nasdaq100Page: INDEX_SOURCES.nasdaq100.page,
+    nasdaq100Csv: INDEX_SOURCES.nasdaq100.url
   },
   markets
 };
@@ -158,6 +209,6 @@ await mkdir(outputDir, { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
 
 for (const market of Object.values(markets)) {
-  console.log(`${market.indicator}: ${market.close}，5年分位 ${market.percentile5y}% → ${market.multiplier.toFixed(2)}x`);
+  console.log(`${market.indicator}: ${market.close}，5年分位 ${market.percentile5y}% → ${market.multiplier.toFixed(2)}x；${market.referenceIndex.symbol}: ${market.referenceIndex.close}`);
 }
 
