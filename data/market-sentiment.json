@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-16T23:43:35.123Z",
+  "generatedAt": "2026-10-17T01:20:10.819Z",
   "methodology": {
     "window": "5年交易日",
     "percentile": "当前收盘值在近5年每日收盘值中的经验分位",
@@ -67,8 +67,8 @@
       "referenceIndex": {
         "name": "标普500",
         "symbol": "SPX",
-        "asOf": "2026-10-15",
-        "close": 7744.06
+        "asOf": "2026-10-16",
+        "close": 7659.44
       }
     },
     "nasdaq100": {
