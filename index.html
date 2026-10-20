@@ -876,8 +876,8 @@
       display: inline-block;
     }
 
-    .history-legend .up { background: #d84f45; }
-    .history-legend .down { background: #249366; }
+    .history-legend .up { background: #C23B30; }
+    .history-legend .down { background: #087C59; }
 
     .index-switch {
       display: grid;
@@ -933,77 +933,53 @@
 
     .return-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 10px;
-      padding: 14px;
-      border-radius: 20px;
-      background: #26302d;
     }
 
     .return-cell {
       display: flex;
-      min-height: 132px;
+      min-height: 84px;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 14px 12px;
-      border: 1px solid rgba(255, 255, 255, .14);
+      padding: 12px 8px;
+      border: 1px solid transparent;
       border-radius: 12px;
-      color: white;
+      color: #fff;
       text-align: center;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
     }
 
-    .return-cell.gain { background: #d84f45; }
-    .return-cell.loss { background: #249366; }
+    .return-cell.gain { background: #C23B30; }
+    .return-cell.loss { background: #087C59; }
     .return-cell.flat { background: #78827f; }
+    .return-cell.notable { border-width: 2px; }
+    .return-cell.gain.notable { background: #A92F24; border-color: rgba(255,255,255,.9); }
+    .return-cell.loss.notable { background: #06684A; border-color: rgba(255,255,255,.9); }
+    .return-cell.notable .return-rate { font-weight: 900; }
 
     .return-year {
-      margin-bottom: 9px;
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: .04em;
-      opacity: .9;
-    }
-
-    .level-flow {
-      display: grid;
-      width: 100%;
-      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-      align-items: center;
-      gap: 7px;
-    }
-
-    .level-point { min-width: 0; }
-
-    .level-point small {
-      display: block;
-      margin-bottom: 3px;
-      font-size: 10px;
-      font-weight: 650;
-      opacity: .72;
-    }
-
-    .level-point b {
-      display: block;
-      overflow: hidden;
-      font-size: clamp(12px, 1.55vw, 16px);
-      line-height: 1.2;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .level-arrow {
-      margin-top: 13px;
-      font-size: 17px;
-      opacity: .75;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      color: rgba(255, 255, 255, .72);
+      line-height: 1;
     }
 
     .return-rate {
-      margin-top: 12px;
-      font-size: clamp(18px, 2.3vw, 24px);
+      margin-top: 6px;
+      font-size: clamp(15px, 1.9vw, 20px);
+      font-weight: 800;
       line-height: 1.1;
-      letter-spacing: -.02em;
+      letter-spacing: -.01em;
+    }
+
+    .return-close {
+      margin-top: 5px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, .88);
+      line-height: 1;
     }
 
     .history-range {
@@ -1073,7 +1049,7 @@
       .history-head { align-items: flex-start; flex-direction: column; }
       .sentiment-head { align-items: flex-start; flex-direction: column; }
       .sentiment-layout { grid-template-columns: 1fr; }
-      .return-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .return-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     }
 
     @media (max-width: 570px) {
@@ -1090,10 +1066,8 @@
       .metrics { grid-template-columns: 1fr; }
       .index-title-row { align-items: flex-start; flex-direction: column; }
       .index-switch { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .return-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 10px; }
-      .return-cell { min-height: 126px; padding-inline: 9px; }
-      .level-flow { gap: 4px; }
-      .level-point b { font-size: 12px; }
+      .return-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; padding: 10px; }
+      .return-cell { min-height: 74px; padding-inline: 8px; }
       .history-summary { grid-template-columns: 1fr; }
       .sentiment-stat-grid, .update-policy { grid-template-columns: 1fr; }
       .sentiment-switch { grid-template-columns: 1fr; }
@@ -1152,26 +1126,13 @@
     .history-stat strong { font-size:clamp(18px,2.4vw,30px); overflow-wrap:anywhere; }
     .history-stat span { font-size:12px; line-height:1.5; }
     .history-range { gap:10px; }
-    .history-tools { display:flex; flex-wrap:wrap; gap:12px; margin:12px 0; align-items:center; }
-    .history-tools label { display:flex; align-items:center; gap:8px; font-size:13px; }
-    .history-tools select { width:auto; }
-    .history-tools small { flex-basis:100%; font-size:12px; color:var(--muted); line-height:1.6; }
     .return-grid { background:transparent; padding:0; gap:10px; }
-    .return-cell, .return-cell.gain, .return-cell.loss, .return-cell.flat { background:white; border:1px solid var(--line); color:var(--ink); box-shadow:none; border-radius:12px; }
-    .return-cell .return-year, .return-cell .level-point small, .return-cell .level-point b, .return-cell .level-arrow { color:var(--ink); text-shadow:none; }
-    .return-cell.gain .return-rate { color:#bd3c32; }
-    .return-cell.loss .return-rate { color:#087c59; }
-    .return-cell.notable .return-rate { font-weight:900; text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:5px; }
-    .return-cell.notable .return-year::after { content:' •'; color:var(--muted); }
-    .return-grid.list-view { grid-template-columns:1fr; gap:0; }
-    .list-view .return-cell { min-height:64px; display:grid; grid-template-columns:70px minmax(0,1fr) 110px; align-items:center; gap:16px; border-radius:0; border-width:0 0 1px; padding:12px; }
-    .list-view .return-year, .list-view .return-rate { margin:0; font-size:16px; }
-    .list-view .level-flow { margin:0; }
+    .return-cell, .return-cell.gain, .return-cell.loss, .return-cell.flat { color:#fff; box-shadow:none; border-radius:12px; }
     .history-empty { grid-column:1/-1; padding:24px; color:var(--muted); }
     @media(max-width:840px) {
       .hero { gap:10px; }
       .subtitle { font-size:13px; line-height:1.6; margin-top:8px; }
-      .history-tools, .history-range { align-items:flex-start; }
+      .history-range { align-items:flex-start; }
       .result-side { padding-top:24px; }
     }
     @media(max-width:570px) {
@@ -1209,16 +1170,11 @@
       .history-range label { flex:1 1 120px; flex-direction:column; align-items:flex-start; gap:5px; font-size:12px; }
       .history-range select { width:100%; }
       .history-range-note { font-size:12px; }
-      .history-tools label { flex:1 1 120px; flex-direction:column; align-items:flex-start; }
-      .history-tools select { width:100%; font-size:13px; }
-      .history-view-control { display:none !important; }
-      .return-grid, .return-grid.list-view { grid-template-columns:1fr; gap:0; }
-      .return-grid .return-cell { min-height:64px; display:grid; grid-template-columns:44px minmax(0,1fr) 76px; align-items:center; gap:8px; padding:12px 4px; border-radius:0; border-width:0 0 1px; }
-      .return-grid .return-year, .return-grid .return-rate { margin:0; font-size:14px; }
-      .return-grid .level-flow { margin:0; display:block; }
-      .return-grid .level-flow .level-point:first-child, .return-grid .level-arrow { display:none; }
-      .return-grid .level-point small { font-size:10px; }
-      .return-grid .level-point b { font-size:13px; }
+      .return-grid { grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; }
+      .return-grid .return-cell { min-height:58px; padding:6px 2px; border-radius:9px; }
+      .return-grid .return-year { margin-bottom:3px; font-size:8px; }
+      .return-grid .return-rate { margin-top:3px; font-size:13px; }
+      .return-grid .return-close { margin-top:2px; font-size:8px; }
       .sentiment-stat-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
       .sentiment-stat { padding:12px 8px; }
       .sentiment-stat strong { font-size:16px; }
@@ -1226,6 +1182,25 @@
       .sentiment-card { padding:18px; }
       .update-policy { grid-template-columns:1fr; }
       .history-source { font-size:12px; line-height:1.7; }
+    }
+
+    .index-mobile-select { display:none; }
+    @media(max-width:640px) {
+      /* 手机端：四个模块同页纵向展示，顶部导航改为锚点跳转 */
+      section.panel[hidden] { display:block !important; }
+      .main-tabs {
+        position:sticky; top:0; z-index:50;
+        width:100%; max-width:none; margin:0 0 14px;
+        border-radius:0; border-left:0; border-right:0;
+        background:rgba(251,250,246,.92);
+        -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+        overflow-x:visible; gap:4px;
+      }
+      .main-tabs .tab-btn { flex:1 1 auto; min-width:0; padding:10px 2px; font-size:13px; }
+      section.panel { scroll-margin-top:54px; margin-bottom:18px; }
+      /* 手机端：指数切换改为下拉选择 */
+      .index-mobile-select { display:block; width:100%; min-width:0; margin:14px 0 4px; }
+      .index-switch { display:none; }
     }
 
   </style>
@@ -1683,13 +1658,21 @@
           <div>
             <p class="section-kicker">Historical returns</p>
             <h2>全球主要指数年度收益</h2>
-            <p class="section-desc">每张卡片依次显示“年初基准点位（上年末收盘）→ 当年末收盘 → 年度收益率”。纳斯达克100、标普500、日经225和韩国KOSPI展示 1986–2025 年；沪深300从 2005 年开始。均为价格指数，不包含分红。</p>
+            <p class="section-desc">每格依次显示年份、年度涨跌幅与年末收盘点位。纳斯达克100、标普500、日经225和韩国KOSPI展示 1986–2025 年；沪深300从 2005 年开始。均为价格指数，不包含分红。</p>
           </div>
           <div class="history-legend" aria-label="颜色说明">
             <span><i class="up"></i>上涨年份</span>
             <span><i class="down"></i>下跌年份</span>
           </div>
         </div>
+
+        <select id="indexMobileSelect" class="index-mobile-select" aria-label="指数选择">
+          <option value="nasdaq" selected>纳斯达克100</option>
+          <option value="sp500">标普500</option>
+          <option value="nikkei">日经225</option>
+          <option value="csi300">沪深300</option>
+          <option value="kospi">韩国KOSPI</option>
+        </select>
 
         <div class="index-switch" aria-label="指数选择">
           <button class="index-btn" type="button" data-index="nasdaq" aria-selected="true">纳斯达克100</button>
@@ -1727,12 +1710,6 @@
             <button class="copy-btn" id="nasdaqResetRange" type="button">全部年份</button>
             <p class="history-range-note" id="nasdaqRangeNote"></p>
           </div>
-          <div class="history-tools">
-            <label>年度筛选 <select id="nasdaqFilter"><option value="all">全部涨跌</option><option value="up">仅看上涨</option><option value="down">仅看下跌</option></select></label>
-            <label>排序 <select id="nasdaqSort"><option value="year">年份从早到晚</option><option value="newest">年份从晚到早</option><option value="best">收益从高到低</option><option value="worst">收益从低到高</option></select></label>
-            <label class="history-view-control">视图 <select id="nasdaqLayout"><option value="grid">卡片</option><option value="list">列表</option></select></label>
-            <small>筛选仅改变明细显示，不改变上方区间汇总；涨跌幅达到 ±30% 的年份加粗标记。</small>
-          </div>
           <div class="return-grid" id="nasdaqGrid" aria-label="纳斯达克100近40年年度收益率"></div>
           <p class="history-source">点位来自 Nasdaq 官方历史数据导出，年度结果与官方年度价格收益资料交叉核对。来源：<a href="https://indexes.nasdaq.com/Index/History/NDX" target="_blank" rel="noreferrer">Nasdaq NDX Historical Data</a>、<a href="https://indexes.nasdaq.com/docs/NDX%20Extended%20Presentation.pdf" target="_blank" rel="noreferrer">Nasdaq 年度价格收益</a>，截至 2025-12-31。</p>
         </article>
@@ -1764,12 +1741,6 @@
             <label for="sp500EndYear">结束年份 <select id="sp500EndYear"></select></label>
             <button class="copy-btn" id="sp500ResetRange" type="button">全部年份</button>
             <p class="history-range-note" id="sp500RangeNote"></p>
-          </div>
-          <div class="history-tools">
-            <label>年度筛选 <select id="sp500Filter"><option value="all">全部涨跌</option><option value="up">仅看上涨</option><option value="down">仅看下跌</option></select></label>
-            <label>排序 <select id="sp500Sort"><option value="year">年份从早到晚</option><option value="newest">年份从晚到早</option><option value="best">收益从高到低</option><option value="worst">收益从低到高</option></select></label>
-            <label class="history-view-control">视图 <select id="sp500Layout"><option value="grid">卡片</option><option value="list">列表</option></select></label>
-            <small>筛选仅改变明细显示，不改变上方区间汇总；涨跌幅达到 ±30% 的年份加粗标记。</small>
           </div>
           <div class="return-grid" id="sp500Grid" aria-label="标普500近40年年度收益率"></div>
           <p class="history-source">点位按各年最后一个交易日的 S&amp;P 500 价格指数收盘值整理，年度收益与 S&amp;P DJI 官方资料逐年核对。来源：<a href="https://www.spglobal.com/spdji/en/indices/equity/sp-500/" target="_blank" rel="noreferrer">S&amp;P 500 官方页面</a>、<a href="https://www.spglobal.com/spdji/en/commentary/article/us-equities-market-attributes" target="_blank" rel="noreferrer">S&amp;P DJI 年度市场资料</a>，截至 2025-12-31。</p>
@@ -1803,12 +1774,6 @@
             <button class="copy-btn" id="nikkeiResetRange" type="button">全部年份</button>
             <p class="history-range-note" id="nikkeiRangeNote"></p>
           </div>
-          <div class="history-tools">
-            <label>年度筛选 <select id="nikkeiFilter"><option value="all">全部涨跌</option><option value="up">仅看上涨</option><option value="down">仅看下跌</option></select></label>
-            <label>排序 <select id="nikkeiSort"><option value="year">年份从早到晚</option><option value="newest">年份从晚到早</option><option value="best">收益从高到低</option><option value="worst">收益从低到高</option></select></label>
-            <label class="history-view-control">视图 <select id="nikkeiLayout"><option value="grid">卡片</option><option value="list">列表</option></select></label>
-            <small>筛选仅改变明细显示，不改变上方区间汇总；涨跌幅达到 ±30% 的年份加粗标记。</small>
-          </div>
           <div class="return-grid" id="nikkeiGrid" aria-label="日经225近40年年度收益率"></div>
           <p class="history-source">点位与年度收益按 Nikkei 官方年度历史数据核对。来源：<a href="https://indexes.nikkei.co.jp/en/nkave/archives/data?list=annually" target="_blank" rel="noreferrer">Nikkei Indexes 年度历史数据</a>，截至 2025-12-30。</p>
         </article>
@@ -1841,12 +1806,6 @@
             <button class="copy-btn" id="csi300ResetRange" type="button">全部年份</button>
             <p class="history-range-note" id="csi300RangeNote"></p>
           </div>
-          <div class="history-tools">
-            <label>年度筛选 <select id="csi300Filter"><option value="all">全部涨跌</option><option value="up">仅看上涨</option><option value="down">仅看下跌</option></select></label>
-            <label>排序 <select id="csi300Sort"><option value="year">年份从早到晚</option><option value="newest">年份从晚到早</option><option value="best">收益从高到低</option><option value="worst">收益从低到高</option></select></label>
-            <label class="history-view-control">视图 <select id="csi300Layout"><option value="grid">卡片</option><option value="list">列表</option></select></label>
-            <small>筛选仅改变明细显示，不改变上方区间汇总；涨跌幅达到 ±30% 的年份加粗标记。</small>
-          </div>
           <div class="return-grid" id="csi300Grid" aria-label="沪深300自发布以来年度收益率"></div>
           <p class="history-source">沪深300基日为 2004-12-31（基点 1000），正式发布于 2005-04-08。2005 年卡片使用基点 1000 至年末 923.45 点，因此并非完整的发布后日历年。来源：<a href="https://oss-ch.csindex.com.cn/static/html/csindex/public/uploads/indices/detail/files/zh_CN/000300factsheet.pdf" target="_blank" rel="noreferrer">中证指数官方资料</a>、<a href="https://www.sse.com.cn/aboutus/publication/monthly/index/" target="_blank" rel="noreferrer">上海证券交易所统计资料</a>，截至 2025-12-31。</p>
         </article>
@@ -1878,12 +1837,6 @@
             <label for="kospiEndYear">结束年份 <select id="kospiEndYear"></select></label>
             <button class="copy-btn" id="kospiResetRange" type="button">全部年份</button>
             <p class="history-range-note" id="kospiRangeNote"></p>
-          </div>
-          <div class="history-tools">
-            <label>年度筛选 <select id="kospiFilter"><option value="all">全部涨跌</option><option value="up">仅看上涨</option><option value="down">仅看下跌</option></select></label>
-            <label>排序 <select id="kospiSort"><option value="year">年份从早到晚</option><option value="newest">年份从晚到早</option><option value="best">收益从高到低</option><option value="worst">收益从低到高</option></select></label>
-            <label class="history-view-control">视图 <select id="kospiLayout"><option value="grid">卡片</option><option value="list">列表</option></select></label>
-            <small>筛选仅改变明细显示，不改变上方区间汇总；涨跌幅达到 ±30% 的年份加粗标记。</small>
           </div>
           <div class="return-grid" id="kospiGrid" aria-label="韩国KOSPI近40年年度收益率"></div>
           <p class="history-source">年度收盘点位按 KOSPI 历史年度表整理，早期数据与 SEC 披露文件、近期数据与韩国交易所披露文件交叉核对。来源：<a href="https://en.wikipedia.org/wiki/KOSPI#Annual_Returns" target="_blank" rel="noreferrer">KOSPI 年度历史表</a>、<a href="https://www.sec.gov/Archives/edgar/data/1290109/000119312511123762/d20f.htm" target="_blank" rel="noreferrer">SEC 历史点位披露</a>、<a href="https://kind.krx.co.kr/external/2026/05/14/000975/20260514002143/11013.htm" target="_blank" rel="noreferrer">KRX 披露资料</a>。截至 2025 年末；以韩元计价，不含分红与汇率变化。</p>
@@ -2423,7 +2376,6 @@
           end.value = String(lastYear);
           renderHistoryGrid(key);
         });
-        ['Filter', 'Sort', 'Layout'].forEach(suffix => $(key + suffix).addEventListener('change', () => renderHistoryGrid(key)));
         renderHistoryGrid(key);
       }
 
@@ -2436,66 +2388,38 @@
         const grid = $(key + 'Grid');
         grid.setAttribute('aria-label', startYear + '至' + endYear + '年年度价格收益率');
         grid.textContent = '';
-        grid.classList.toggle('list-view', $(key + 'Layout').value === 'list');
         values.forEach((endLevel, index) => {
           if (index < range.first || index > range.last) return;
           const year = series.startYear + index;
           const startLevel = index === 0 ? series.base : values[index - 1];
           const value = (endLevel / startLevel - 1) * 100;
-          const filter = $(key + 'Filter').value;
-          if ((filter === 'up' && value <= 0) || (filter === 'down' && value >= 0)) return;
           const cell = document.createElement('div');
           cell.dataset.year = year;
           cell.dataset.rate = value;
           cell.className = `return-cell ${value > 0 ? 'gain' : value < 0 ? 'loss' : 'flat'}`;
           cell.classList.toggle('notable', Math.abs(value) >= 30);
-          cell.setAttribute('aria-label', `${year}年，年初基准 ${formatIndexLevel(startLevel)}，年末收盘 ${formatIndexLevel(endLevel)}，收益率 ${formatHistoricalPercent(value)}`);
+          cell.setAttribute('aria-label', `${year}年，年末收盘 ${formatIndexLevel(endLevel)}，收益率 ${formatHistoricalPercent(value)}`);
 
           const yearLabel = document.createElement('div');
           yearLabel.className = 'return-year';
           yearLabel.textContent = String(year);
 
-          const flow = document.createElement('div');
-          flow.className = 'level-flow';
-
-          const startPoint = document.createElement('div');
-          startPoint.className = 'level-point';
-          const startCaption = document.createElement('small');
-          startCaption.textContent = '年初基准';
-          const startValue = document.createElement('b');
-          startValue.textContent = formatIndexLevel(startLevel);
-          startPoint.append(startCaption, startValue);
-
-          const arrow = document.createElement('span');
-          arrow.className = 'level-arrow';
-          arrow.setAttribute('aria-hidden', 'true');
-          arrow.textContent = '→';
-
-          const endPoint = document.createElement('div');
-          endPoint.className = 'level-point';
-          const endCaption = document.createElement('small');
-          endCaption.textContent = '年末收盘';
-          const endValue = document.createElement('b');
-          endValue.textContent = formatIndexLevel(endLevel);
-          endPoint.append(endCaption, endValue);
-          flow.append(startPoint, arrow, endPoint);
-
           const amount = document.createElement('strong');
           amount.className = 'return-rate';
           amount.textContent = formatHistoricalPercent(value);
-          cell.append(yearLabel, flow, amount);
+
+          const closePoint = document.createElement('div');
+          closePoint.className = 'return-close';
+          closePoint.textContent = formatIndexLevel(endLevel);
+
+          cell.append(yearLabel, amount, closePoint);
           grid.appendChild(cell);
         });
 
-        const sort = $(key + 'Sort').value;
-        [...grid.children].sort((a, b) => sort === 'best' ? b.dataset.rate - a.dataset.rate :
-          sort === 'worst' ? a.dataset.rate - b.dataset.rate :
-          sort === 'newest' ? b.dataset.year - a.dataset.year : a.dataset.year - b.dataset.year
-        ).forEach(cell => grid.appendChild(cell));
         if (!grid.children.length) {
           const empty = document.createElement('p');
           empty.className = 'history-empty';
-          empty.textContent = '所选年份内没有符合条件的记录。';
+          empty.textContent = '所选年份内没有符合的记录。';
           grid.appendChild(empty);
         }
         $(key + 'CagrLabel').textContent = range.years + '年复合年化收益率（CAGR）';
@@ -2531,6 +2455,15 @@
         }, 1400);
       }
 
+      function selectIndex(indexName) {
+        document.querySelectorAll('.index-btn').forEach((item) => item.setAttribute('aria-selected', String(item.dataset.index === indexName)));
+        const mobileSelect = $('indexMobileSelect');
+        if (mobileSelect) mobileSelect.value = indexName;
+        Object.keys(historicalReturns).forEach((key) => {
+          $(`${key}View`).hidden = key !== indexName;
+        });
+      }
+
       document.querySelectorAll('[data-rate-target]').forEach(button => {
         button.addEventListener('click', () => {
           const key = button.dataset.rateTarget;
@@ -2543,11 +2476,16 @@
         button.addEventListener('click', () => {
           document.querySelectorAll('.tab-btn').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
           const target = button.dataset.tab;
-          $('compoundPanel').hidden = target !== 'compound';
-          $('sentimentPanel').hidden = target !== 'sentiment';
-          $('pricePanel').hidden = target !== 'price';
-          $('historyPanel').hidden = target !== 'history';
-          $(target + 'Panel').scrollIntoView({ block: 'start' });
+          if (window.matchMedia('(max-width: 640px)').matches) {
+            // 手机端：四个模块同页展示，导航仅做锚点跳转
+            $(target + 'Panel').scrollIntoView({ block: 'start' });
+          } else {
+            $('compoundPanel').hidden = target !== 'compound';
+            $('sentimentPanel').hidden = target !== 'sentiment';
+            $('pricePanel').hidden = target !== 'price';
+            $('historyPanel').hidden = target !== 'history';
+            $(target + 'Panel').scrollIntoView({ block: 'start' });
+          }
         });
       });
 
@@ -2567,14 +2505,13 @@
       });
 
       document.querySelectorAll('.index-btn').forEach((button) => {
-        button.addEventListener('click', () => {
-          document.querySelectorAll('.index-btn').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
-          const selectedIndex = button.dataset.index;
-          Object.keys(historicalReturns).forEach((key) => {
-            $(`${key}View`).hidden = key !== selectedIndex;
-          });
-        });
+        button.addEventListener('click', () => selectIndex(button.dataset.index));
       });
+
+      const indexMobileSelect = $('indexMobileSelect');
+      if (indexMobileSelect) {
+        indexMobileSelect.addEventListener('change', () => selectIndex(indexMobileSelect.value));
+      }
 
       document.querySelectorAll('.mode-btn').forEach((button) => {
         button.addEventListener('click', () => {
