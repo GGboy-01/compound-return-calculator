@@ -881,9 +881,9 @@
 
     .index-switch {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 9px;
-      max-width: 820px;
+      max-width: 100%;
       margin-bottom: 22px;
     }
 
@@ -1005,6 +1005,18 @@
       line-height: 1.1;
       letter-spacing: -.02em;
     }
+
+    .history-range {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0 20px;
+    }
+    .history-range label { display: flex; align-items: center; gap: 8px; }
+    .history-range select { width: auto; min-width: 100px; }
+    .history-range .copy-btn { margin: 0; width: auto; }
+    .history-range-note { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
 
     .history-summary {
       display: grid;
@@ -1551,7 +1563,7 @@
           <div>
             <p class="section-kicker">Historical returns</p>
             <h2>全球主要指数年度收益</h2>
-            <p class="section-desc">每张卡片依次显示“年初基准点位（上年末收盘）→ 当年末收盘 → 年度收益率”。纳斯达克100、标普500和日经225展示 1986–2025 年；沪深300从 2005 年开始。均为价格指数，不包含分红。</p>
+            <p class="section-desc">每张卡片依次显示“年初基准点位（上年末收盘）→ 当年末收盘 → 年度收益率”。纳斯达克100、标普500、日经225和韩国KOSPI展示 1986–2025 年；沪深300从 2005 年开始。均为价格指数，不包含分红。</p>
           </div>
           <div class="history-legend" aria-label="颜色说明">
             <span><i class="up"></i>上涨年份</span>
@@ -1564,6 +1576,7 @@
           <button class="index-btn" type="button" data-index="sp500" aria-selected="false">标普500</button>
           <button class="index-btn" type="button" data-index="nikkei" aria-selected="false">日经225</button>
           <button class="index-btn" type="button" data-index="csi300" aria-selected="false">沪深300</button>
+          <button class="index-btn" type="button" data-index="kospi" aria-selected="false">韩国KOSPI</button>
         </div>
 
         <article class="index-view" id="nasdaqView">
@@ -1574,21 +1587,27 @@
             </div>
             <span class="history-period">1986–2025 · 40年</span>
           </div>
-          <div class="return-grid" id="nasdaqGrid" aria-label="纳斯达克100近40年年度收益率"></div>
-          <div class="history-summary">
+          <div class="history-summary" aria-live="polite">
             <div class="history-stat">
-              <span>40年复合年化收益率（CAGR）</span>
-              <strong id="nasdaqCagr">14.03%</strong>
+              <span id="nasdaqCagrLabel">所选区间复合年化收益率（CAGR）</span>
+              <strong id="nasdaqCagr">—</strong>
             </div>
             <div class="history-stat">
               <span>区间累计复利收益</span>
-              <strong id="nasdaqCumulative">+18,986.74%</strong>
+              <strong id="nasdaqCumulative">—</strong>
             </div>
             <div class="history-stat">
               <span>上涨年份</span>
-              <strong id="nasdaqPositive">33 / 40</strong>
+              <strong id="nasdaqPositive">—</strong>
             </div>
           </div>
+          <div class="history-range">
+            <label for="nasdaqStartYear">起始年份 <select id="nasdaqStartYear"></select></label>
+            <label for="nasdaqEndYear">结束年份 <select id="nasdaqEndYear"></select></label>
+            <button class="copy-btn" id="nasdaqResetRange" type="button">全部年份</button>
+            <p class="history-range-note" id="nasdaqRangeNote"></p>
+          </div>
+          <div class="return-grid" id="nasdaqGrid" aria-label="纳斯达克100近40年年度收益率"></div>
           <p class="history-source">点位来自 Nasdaq 官方历史数据导出，年度结果与官方年度价格收益资料交叉核对。来源：<a href="https://indexes.nasdaq.com/Index/History/NDX" target="_blank" rel="noreferrer">Nasdaq NDX Historical Data</a>、<a href="https://indexes.nasdaq.com/docs/NDX%20Extended%20Presentation.pdf" target="_blank" rel="noreferrer">Nasdaq 年度价格收益</a>，截至 2025-12-31。</p>
         </article>
 
@@ -1600,21 +1619,27 @@
             </div>
             <span class="history-period">1986–2025 · 40年</span>
           </div>
-          <div class="return-grid" id="sp500Grid" aria-label="标普500近40年年度收益率"></div>
-          <div class="history-summary">
+          <div class="history-summary" aria-live="polite">
             <div class="history-stat">
-              <span>40年复合年化收益率（CAGR）</span>
-              <strong id="sp500Cagr">9.08%</strong>
+              <span id="sp500CagrLabel">所选区间复合年化收益率（CAGR）</span>
+              <strong id="sp500Cagr">—</strong>
             </div>
             <div class="history-stat">
               <span>区间累计复利收益</span>
-              <strong id="sp500Cumulative">+3,140.01%</strong>
+              <strong id="sp500Cumulative">—</strong>
             </div>
             <div class="history-stat">
               <span>上涨年份</span>
-              <strong id="sp500Positive">30 / 40</strong>
+              <strong id="sp500Positive">—</strong>
             </div>
           </div>
+          <div class="history-range">
+            <label for="sp500StartYear">起始年份 <select id="sp500StartYear"></select></label>
+            <label for="sp500EndYear">结束年份 <select id="sp500EndYear"></select></label>
+            <button class="copy-btn" id="sp500ResetRange" type="button">全部年份</button>
+            <p class="history-range-note" id="sp500RangeNote"></p>
+          </div>
+          <div class="return-grid" id="sp500Grid" aria-label="标普500近40年年度收益率"></div>
           <p class="history-source">点位按各年最后一个交易日的 S&amp;P 500 价格指数收盘值整理，年度收益与 S&amp;P DJI 官方资料逐年核对。来源：<a href="https://www.spglobal.com/spdji/en/indices/equity/sp-500/" target="_blank" rel="noreferrer">S&amp;P 500 官方页面</a>、<a href="https://www.spglobal.com/spdji/en/commentary/article/us-equities-market-attributes" target="_blank" rel="noreferrer">S&amp;P DJI 年度市场资料</a>，截至 2025-12-31。</p>
         </article>
 
@@ -1626,21 +1651,27 @@
             </div>
             <span class="history-period">1986–2025 · 40年</span>
           </div>
-          <div class="return-grid" id="nikkeiGrid" aria-label="日经225近40年年度收益率"></div>
-          <div class="history-summary">
+          <div class="history-summary" aria-live="polite">
             <div class="history-stat">
-              <span>40年复合年化收益率（CAGR）</span>
-              <strong id="nikkeiCagr">3.42%</strong>
+              <span id="nikkeiCagrLabel">所选区间复合年化收益率（CAGR）</span>
+              <strong id="nikkeiCagr">—</strong>
             </div>
             <div class="history-stat">
               <span>区间累计复利收益</span>
-              <strong id="nikkeiCumulative">+283.88%</strong>
+              <strong id="nikkeiCumulative">—</strong>
             </div>
             <div class="history-stat">
               <span>上涨年份</span>
-              <strong id="nikkeiPositive">25 / 40</strong>
+              <strong id="nikkeiPositive">—</strong>
             </div>
           </div>
+          <div class="history-range">
+            <label for="nikkeiStartYear">起始年份 <select id="nikkeiStartYear"></select></label>
+            <label for="nikkeiEndYear">结束年份 <select id="nikkeiEndYear"></select></label>
+            <button class="copy-btn" id="nikkeiResetRange" type="button">全部年份</button>
+            <p class="history-range-note" id="nikkeiRangeNote"></p>
+          </div>
+          <div class="return-grid" id="nikkeiGrid" aria-label="日经225近40年年度收益率"></div>
           <p class="history-source">点位与年度收益按 Nikkei 官方年度历史数据核对。来源：<a href="https://indexes.nikkei.co.jp/en/nkave/archives/data?list=annually" target="_blank" rel="noreferrer">Nikkei Indexes 年度历史数据</a>，截至 2025-12-30。</p>
         </article>
 
@@ -1652,23 +1683,62 @@
             </div>
             <span class="history-period">2005–2025 · 21年</span>
           </div>
-          <div class="return-grid" id="csi300Grid" aria-label="沪深300自发布以来年度收益率"></div>
-          <div class="history-summary">
+          <div class="history-summary" aria-live="polite">
             <div class="history-stat">
-              <span>21年复合年化收益率（CAGR）</span>
-              <strong id="csi300Cagr">7.57%</strong>
+              <span id="csi300CagrLabel">所选区间复合年化收益率（CAGR）</span>
+              <strong id="csi300Cagr">—</strong>
             </div>
             <div class="history-stat">
               <span>区间累计复利收益</span>
-              <strong id="csi300Cumulative">+362.99%</strong>
+              <strong id="csi300Cumulative">—</strong>
             </div>
             <div class="history-stat">
               <span>上涨年份</span>
-              <strong id="csi300Positive">11 / 21</strong>
+              <strong id="csi300Positive">—</strong>
             </div>
           </div>
+          <div class="history-range">
+            <label for="csi300StartYear">起始年份 <select id="csi300StartYear"></select></label>
+            <label for="csi300EndYear">结束年份 <select id="csi300EndYear"></select></label>
+            <button class="copy-btn" id="csi300ResetRange" type="button">全部年份</button>
+            <p class="history-range-note" id="csi300RangeNote"></p>
+          </div>
+          <div class="return-grid" id="csi300Grid" aria-label="沪深300自发布以来年度收益率"></div>
           <p class="history-source">沪深300基日为 2004-12-31（基点 1000），正式发布于 2005-04-08。2005 年卡片使用基点 1000 至年末 923.45 点，因此并非完整的发布后日历年。来源：<a href="https://oss-ch.csindex.com.cn/static/html/csindex/public/uploads/indices/detail/files/zh_CN/000300factsheet.pdf" target="_blank" rel="noreferrer">中证指数官方资料</a>、<a href="https://www.sse.com.cn/aboutus/publication/monthly/index/" target="_blank" rel="noreferrer">上海证券交易所统计资料</a>，截至 2025-12-31。</p>
         </article>
+
+        <article class="index-view" id="kospiView" hidden>
+          <div class="index-title-row">
+            <div>
+              <h3>韩国KOSPI年度价格收益率</h3>
+              <p>Korea Composite Stock Price Index（KOSPI）</p>
+            </div>
+            <span class="history-period">1986–2025 · 40年</span>
+          </div>
+          <div class="history-summary" aria-live="polite">
+            <div class="history-stat">
+              <span id="kospiCagrLabel">所选区间复合年化收益率（CAGR）</span>
+              <strong id="kospiCagr">—</strong>
+            </div>
+            <div class="history-stat">
+              <span>区间累计复利收益</span>
+              <strong id="kospiCumulative">—</strong>
+            </div>
+            <div class="history-stat">
+              <span>上涨年份</span>
+              <strong id="kospiPositive">—</strong>
+            </div>
+          </div>
+          <div class="history-range">
+            <label for="kospiStartYear">起始年份 <select id="kospiStartYear"></select></label>
+            <label for="kospiEndYear">结束年份 <select id="kospiEndYear"></select></label>
+            <button class="copy-btn" id="kospiResetRange" type="button">全部年份</button>
+            <p class="history-range-note" id="kospiRangeNote"></p>
+          </div>
+          <div class="return-grid" id="kospiGrid" aria-label="韩国KOSPI近40年年度收益率"></div>
+          <p class="history-source">年度收盘点位按 KOSPI 历史年度表整理，早期数据与 SEC 披露文件、近期数据与韩国交易所披露文件交叉核对。来源：<a href="https://en.wikipedia.org/wiki/KOSPI#Annual_Returns" target="_blank" rel="noreferrer">KOSPI 年度历史表</a>、<a href="https://www.sec.gov/Archives/edgar/data/1290109/000119312511123762/d20f.htm" target="_blank" rel="noreferrer">SEC 历史点位披露</a>、<a href="https://kind.krx.co.kr/external/2026/05/14/000975/20260514002143/11013.htm" target="_blank" rel="noreferrer">KRX 披露资料</a>。截至 2025 年末；以韩元计价，不含分红与汇率变化。</p>
+        </article>
+
 
         <div class="method-card">
           <strong>这里为什么只保留复合收益</strong><br>
@@ -1714,6 +1784,12 @@
       };
 
       const historicalReturns = {
+        kospi: { startYear: 1986, base: 163.37, closes: [
+          272.61, 525.11, 907.20, 909.72, 696.11, 610.92, 678.44, 866.18, 1027.37, 882.94,
+          651.22, 376.31, 562.46, 1028.07, 504.62, 693.70, 627.55, 810.71, 895.92, 1379.37,
+          1434.46, 1897.13, 1124.47, 1682.77, 2051.00, 1825.74, 1997.05, 2011.34, 1915.59, 1961.31,
+          2026.46, 2467.49, 2041.04, 2197.67, 2873.47, 2977.65, 2236.40, 2655.28, 2399.49, 4214.17
+        ]},
         nasdaq: { startYear: 1986, base: 132.29, closes: [
           141.41, 156.25, 177.41, 223.84, 200.53, 330.86, 360.19, 398.28, 404.27, 576.23,
           821.36, 990.80, 1836.01, 3707.82, 2341.70, 1577.05, 984.36, 1467.92, 1621.12, 1645.20,
@@ -2147,12 +2223,63 @@
         renderSentiment();
       }
 
+      function calculateHistoryRange(series, startYear, endYear) {
+        const first = startYear - series.startYear;
+        const last = endYear - series.startYear;
+        if (!Number.isInteger(first) || !Number.isInteger(last) ||
+            first < 0 || last >= series.closes.length || first > last) {
+          throw new RangeError('年份区间无效');
+        }
+        const startLevel = first === 0 ? series.base : series.closes[first - 1];
+        const endLevel = series.closes[last];
+        const years = last - first + 1;
+        const ratio = endLevel / startLevel;
+        let positive = 0;
+        for (let i = first; i <= last; i++) {
+          if (series.closes[i] > (i === 0 ? series.base : series.closes[i - 1])) positive++;
+        }
+        return { first, last, startLevel, endLevel, years, positive,
+          cagr: (Math.pow(ratio, 1 / years) - 1) * 100, cumulative: (ratio - 1) * 100 };
+      }
+
+      function initHistoryRange(key) {
+        const series = historicalReturns[key];
+        const start = $(key + 'StartYear');
+        const end = $(key + 'EndYear');
+        const lastYear = series.startYear + series.closes.length - 1;
+        for (let year = series.startYear; year <= lastYear; year++) {
+          start.add(new Option(year + '年', year));
+          end.add(new Option(year + '年', year));
+        }
+        start.value = String(series.startYear);
+        end.value = String(lastYear);
+        start.addEventListener('change', () => {
+          if (Number(start.value) > Number(end.value)) end.value = start.value;
+          renderHistoryGrid(key);
+        });
+        end.addEventListener('change', () => {
+          if (Number(end.value) < Number(start.value)) start.value = end.value;
+          renderHistoryGrid(key);
+        });
+        $(key + 'ResetRange').addEventListener('click', () => {
+          start.value = String(series.startYear);
+          end.value = String(lastYear);
+          renderHistoryGrid(key);
+        });
+        renderHistoryGrid(key);
+      }
+
       function renderHistoryGrid(key) {
         const series = historicalReturns[key];
         const values = series.closes;
-        const grid = $(`${key}Grid`);
+        const startYear = Number($(key + 'StartYear').value);
+        const endYear = Number($(key + 'EndYear').value);
+        const range = calculateHistoryRange(series, startYear, endYear);
+        const grid = $(key + 'Grid');
+        grid.setAttribute('aria-label', startYear + '至' + endYear + '年年度价格收益率');
         grid.textContent = '';
         values.forEach((endLevel, index) => {
+          if (index < range.first || index > range.last) return;
           const year = series.startYear + index;
           const startLevel = index === 0 ? series.base : values[index - 1];
           const value = (endLevel / startLevel - 1) * 100;
@@ -2196,16 +2323,15 @@
           grid.appendChild(cell);
         });
 
-        const compounded = values[values.length - 1] / series.base;
-        const cagr = (Math.pow(compounded, 1 / values.length) - 1) * 100;
-        const cumulative = (compounded - 1) * 100;
-        const positive = values.filter((endLevel, index) => {
-          const startLevel = index === 0 ? series.base : values[index - 1];
-          return endLevel > startLevel;
-        }).length;
-        $(`${key}Cagr`).textContent = `${cagr.toFixed(2)}%`;
-        $(`${key}Cumulative`).textContent = formatLargePercent(cumulative);
-        $(`${key}Positive`).textContent = `${positive} / ${values.length}`;
+        $(key + 'CagrLabel').textContent = range.years + '年复合年化收益率（CAGR）';
+        $(key + 'Cagr').textContent = range.cagr.toFixed(2) + '%';
+        $(key + 'Cumulative').textContent = formatLargePercent(range.cumulative);
+        $(key + 'Positive').textContent = range.positive + ' / ' + range.years;
+        $(key + 'View').querySelector('.history-period').textContent = startYear + '–' + endYear + ' · ' + range.years + '年';
+        $(key + 'RangeNote').textContent = '包含起止年份，按 ' + (startYear - 1) + ' 年末基准 ' +
+          formatIndexLevel(range.startLevel) + ' → ' + endYear + ' 年末 ' + formatIndexLevel(range.endLevel) +
+          ' 计算，共 ' + range.years + ' 年。CAGR =（期末点位 ÷ 起始点位）^(1 ÷ 年数) − 1；不含分红。';
+
       }
 
       async function copyText(text, button) {
@@ -2340,10 +2466,7 @@
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden && Date.now() - lastSentimentFetch > 5 * 60 * 1000) loadMarketSentiment();
       });
-      renderHistoryGrid('nasdaq');
-      renderHistoryGrid('sp500');
-      renderHistoryGrid('nikkei');
-      renderHistoryGrid('csi300');
+      Object.keys(historicalReturns).forEach(initHistoryRange);
     })();
   </script>
 </body>
