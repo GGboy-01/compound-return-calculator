@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-20T16:39:52.864Z",
+  "generatedAt": "2026-10-20T23:59:24.453Z",
   "methodology": {
     "window": "5年交易日",
     "percentile": "当前收盘值在近5年每日收盘值中的经验分位",
@@ -77,12 +77,12 @@
     "nasdaq100": {
       "indexName": "纳斯达克100",
       "indicator": "VXN",
-      "asOf": "2026-10-19",
-      "close": 25.56,
-      "previousAsOf": "2026-10-16",
-      "previousClose": 27.13,
-      "changePercent": -5.79,
-      "percentile5y": 67.8,
+      "asOf": "2026-10-20",
+      "close": 25.22,
+      "previousAsOf": "2026-10-19",
+      "previousClose": 25.56,
+      "changePercent": -1.33,
+      "percentile5y": 66.2,
       "sampleSize": 1256,
       "multiplier": 1.2,
       "sentiment": "偏恐慌",
