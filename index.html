@@ -1110,6 +1110,124 @@
     @media (prefers-reduced-motion: reduce) {
       * { scroll-behavior: auto !important; transition: none !important; }
     }
+
+    /* Responsive reading and interaction refinements */
+    .shell { max-width: 1200px; width: calc(100% - 40px); padding-top: 28px; }
+    .hero { margin-bottom: 14px; }
+    .share-site { justify-content: flex-end; margin-bottom: 12px; }
+    .share-site:has(#shareSiteStatus:empty) #shareSiteStatus { display: none; }
+    .main-tabs { display: flex; width: 100%; max-width: none; }
+    .tab-btn { flex: 1; white-space: nowrap; }
+    button, select, summary { min-height: 44px; }
+    button:hover { filter: brightness(.96); }
+    button:active { transform: translateY(1px); }
+    :is(button, input, select, summary, a):focus-visible { outline: 3px solid #c58b35; outline-offset: 3px; }
+    .panel { scroll-margin-top: 16px; }
+    .panel-grid > *, .field, .input-wrap { min-width: 0; }
+    .fee-card summary, .method-card summary, .result-note summary { cursor: pointer; font-weight: 700; padding: 8px 0; color: var(--forest); }
+    .fee-card summary small { font-weight: 400; margin-left: 12px; color: var(--muted); }
+    .fee-head { margin-top: 12px; }
+    .result-note, .method-card, footer { font-size: 12px; line-height: 1.7; }
+    .range-row { grid-template-columns: minmax(0, 1fr) 112px; }
+    .range-labels { font-size: 12px; }
+    .field:has(.rate-presets) { display:flex; flex-direction:column; }
+    .rate-presets { display:flex; gap:8px; order:3; margin-top:8px; }
+    .range-row { width:100%; }
+    .rate-presets button { border:1px solid var(--line); background:white; color:var(--forest); border-radius:10px; padding:6px 12px; }
+    .metrics { grid-template-columns: repeat(2,minmax(0,1fr)); gap:10px; }
+    .metric { padding:14px; min-height:82px; background:rgba(255,255,255,.4); }
+    .metric strong { font-size:clamp(16px,1.6vw,22px); overflow-wrap:anywhere; }
+    .core-metric { background:white; border-color:#bdd6cd; }
+    .core-metric strong { font-size:clamp(20px,2vw,28px); }
+    .big-number { font-size:clamp(30px,3.4vw,48px); overflow-wrap:anywhere; }
+    .reference-value { display:flex; align-items:baseline; flex-wrap:wrap; gap:12px; margin:6px 0; }
+    .index-up { color:#ffb3a6; }
+    .index-down { color:#90e5c4; }
+    #sentimentReferencePrevious { font-size:12px; line-height:1.6; }
+    .gauge-track { height:16px; }
+    .suggested-amount { margin-top:16px; }
+    .sentiment-formula { margin-top:16px; font-size:12px; line-height:1.7; }
+    .history-summary { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .history-stat { display:flex; flex-direction:column-reverse; gap:8px; padding:16px; justify-content:flex-end; }
+    .history-stat strong { font-size:clamp(18px,2.4vw,30px); overflow-wrap:anywhere; }
+    .history-stat span { font-size:12px; line-height:1.5; }
+    .history-range { gap:10px; }
+    .history-tools { display:flex; flex-wrap:wrap; gap:12px; margin:12px 0; align-items:center; }
+    .history-tools label { display:flex; align-items:center; gap:8px; font-size:13px; }
+    .history-tools select { width:auto; }
+    .history-tools small { flex-basis:100%; font-size:12px; color:var(--muted); line-height:1.6; }
+    .return-grid { background:transparent; padding:0; gap:10px; }
+    .return-cell, .return-cell.gain, .return-cell.loss, .return-cell.flat { background:white; border:1px solid var(--line); color:var(--ink); box-shadow:none; border-radius:12px; }
+    .return-cell .return-year, .return-cell .level-point small, .return-cell .level-point b, .return-cell .level-arrow { color:var(--ink); text-shadow:none; }
+    .return-cell.gain .return-rate { color:#bd3c32; }
+    .return-cell.loss .return-rate { color:#087c59; }
+    .return-cell.notable .return-rate { font-weight:900; text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:5px; }
+    .return-cell.notable .return-year::after { content:' •'; color:var(--muted); }
+    .return-grid.list-view { grid-template-columns:1fr; gap:0; }
+    .list-view .return-cell { min-height:64px; display:grid; grid-template-columns:70px minmax(0,1fr) 110px; align-items:center; gap:16px; border-radius:0; border-width:0 0 1px; padding:12px; }
+    .list-view .return-year, .list-view .return-rate { margin:0; font-size:16px; }
+    .list-view .level-flow { margin:0; }
+    .history-empty { grid-column:1/-1; padding:24px; color:var(--muted); }
+    @media(max-width:840px) {
+      .hero { gap:10px; }
+      .subtitle { font-size:13px; line-height:1.6; margin-top:8px; }
+      .history-tools, .history-range { align-items:flex-start; }
+      .result-side { padding-top:24px; }
+    }
+    @media(max-width:570px) {
+      .shell { width:calc(100% - 32px); padding-top:18px; }
+      h1 { font-size:26px; }
+      h2 { font-size:24px; }
+      .logo { width:40px; height:40px; }
+      .brand { gap:10px; }
+      .privacy { font-size:11px; white-space:normal; }
+      .share-site { margin-top:-4px; margin-bottom:8px; }
+      button, select, summary, input:not([type=range]) { min-height:48px; }
+      .main-tabs, .index-switch, .sentiment-switch { display:flex; overflow-x:auto; max-width:100%; gap:6px; scrollbar-width:thin; }
+      .main-tabs .tab-btn, .index-switch .index-btn, .sentiment-switch .sentiment-index-btn { flex:0 0 auto; min-width:96px; padding:10px 14px; }
+      .mode-switch { display:flex; }
+      .mode-btn { flex:1; }
+      .form-side, .result-side, .history-wrap, .sentiment-wrap { padding:20px 16px; }
+      .section-desc { font-size:13px; line-height:1.7; }
+      .fields { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+      .field.full { grid-column:1/-1; }
+      input, select { max-width:100%; min-width:0; font-size:16px; }
+      input[type=date] { padding-inline:6px; font-size:13px; }
+      .fee-card { grid-column:1/-1; padding:10px 12px; }
+      .fee-grid { gap:10px; }
+      .fee-grid label { font-size:12px; }
+      .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .metric { padding:12px; }
+      .core-metric strong { font-size:20px; }
+      .metric .eyebrow { font-size:12px; }
+      .hero-result { padding:20px; }
+      .big-number { font-size:32px; }
+      .history-summary { gap:6px; }
+      .history-stat { padding:12px 8px; border-radius:10px; }
+      .history-stat strong { font-size:17px; }
+      .history-stat span { font-size:11px; }
+      .history-range label { flex:1 1 120px; flex-direction:column; align-items:flex-start; gap:5px; font-size:12px; }
+      .history-range select { width:100%; }
+      .history-range-note { font-size:12px; }
+      .history-tools label { flex:1 1 120px; flex-direction:column; align-items:flex-start; }
+      .history-tools select { width:100%; font-size:13px; }
+      .history-view-control { display:none !important; }
+      .return-grid, .return-grid.list-view { grid-template-columns:1fr; gap:0; }
+      .return-grid .return-cell { min-height:64px; display:grid; grid-template-columns:44px minmax(0,1fr) 76px; align-items:center; gap:8px; padding:12px 4px; border-radius:0; border-width:0 0 1px; }
+      .return-grid .return-year, .return-grid .return-rate { margin:0; font-size:14px; }
+      .return-grid .level-flow { margin:0; display:block; }
+      .return-grid .level-flow .level-point:first-child, .return-grid .level-arrow { display:none; }
+      .return-grid .level-point small { font-size:10px; }
+      .return-grid .level-point b { font-size:13px; }
+      .sentiment-stat-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+      .sentiment-stat { padding:12px 8px; }
+      .sentiment-stat strong { font-size:16px; }
+      .quote-main > strong { font-size:48px; }
+      .sentiment-card { padding:18px; }
+      .update-policy { grid-template-columns:1fr; }
+      .history-source { font-size:12px; line-height:1.7; }
+    }
+
   </style>
 </head>
 <body>
@@ -1134,8 +1252,8 @@
 
     <section class="share-site" aria-label="分享网站">
       <a id="publicSiteLink" href="https://ggboy-01.github.io/compound-return-calculator/">打开在线版</a>
-      <button class="copy-btn" id="copySiteLink" type="button">复制分享链接</button>
-      <span id="shareSiteStatus" role="status" aria-live="polite">分享在线网址，手机和电脑均可访问。</span>
+      <button class="copy-btn" id="copySiteLink" type="button" aria-label="复制网站分享链接" title="复制分享链接">↗ 分享</button>
+      <span id="shareSiteStatus" role="status" aria-live="polite"></span>
       <p id="localFileNotice" hidden>你正在打开本地文件，本地路径无法分享给别人。请打开在线版，或点击“复制分享链接”。</p>
     </section>
 
@@ -1176,7 +1294,8 @@
                 </div>
               </div>
               <div class="field full">
-                <label for="lumpRateRange">预期年化收益率</label>
+                <div class="rate-presets" aria-label="快捷年化收益率"><button type="button" data-rate-target="lump" data-rate="5">5%</button><button type="button" data-rate-target="lump" data-rate="10">10%</button><button type="button" data-rate-target="lump" data-rate="15">15%</button></div>
+                <label for="lumpRate">预期年化收益率</label>
                 <div class="range-row">
                   <div>
                     <input id="lumpRateRange" type="range" min="1" max="20" step="0.1" value="10" aria-label="预期年化收益率滑块">
@@ -1188,7 +1307,7 @@
                   </div>
                 </div>
               </div>
-              <section class="fee-card" aria-labelledby="lumpFeeTitle">
+              <details class="fee-card" aria-labelledby="lumpFeeTitle"><summary>基金费率设置 <small>按需展开</small></summary>
                 <div class="fee-head">
                   <div>
                     <h3 id="lumpFeeTitle">基金费率设置</h3>
@@ -1227,7 +1346,7 @@
                   </div>
                 </div>
                 <p class="fee-note">每项可填 0.00%–2.00%。实际基金净值通常已经扣除运作费；若输入的是基金历史收益率，请将三项运作费设为 0，避免重复扣除。</p>
-              </section>
+              </details>
             </div>
             <div class="actions">
               <button class="primary" type="submit">计算复利收益</button>
@@ -1270,7 +1389,8 @@
                 <div class="field-note">结束日若正好是计划投入日，也会计入一期。</div>
               </div>
               <div class="field full">
-                <label for="dcaRateRange">预期年化收益率</label>
+                <div class="rate-presets" aria-label="快捷年化收益率"><button type="button" data-rate-target="dca" data-rate="5">5%</button><button type="button" data-rate-target="dca" data-rate="10">10%</button><button type="button" data-rate-target="dca" data-rate="15">15%</button></div>
+                <label for="dcaRate">预期年化收益率</label>
                 <div class="range-row">
                   <div>
                     <input id="dcaRateRange" type="range" min="1" max="20" step="0.1" value="10" aria-label="预期年化收益率滑块">
@@ -1283,7 +1403,7 @@
                 </div>
                 <div class="field-note">每笔定投从实际投入日开始，分别按其剩余持有年限计算年复利。</div>
               </div>
-              <section class="fee-card" aria-labelledby="dcaFeeTitle">
+              <details class="fee-card" aria-labelledby="dcaFeeTitle"><summary>基金费率设置 <small>按需展开</small></summary>
                 <div class="fee-head">
                   <div>
                     <h3 id="dcaFeeTitle">基金费率设置</h3>
@@ -1322,7 +1442,7 @@
                   </div>
                 </div>
                 <p class="fee-note">每项可填 0.00%–2.00%。买入费从每期金额中扣除，三项运作费合计后按每笔资金的实际持有期计算。</p>
-              </section>
+              </details>
             </div>
             <div class="actions">
               <button class="primary" type="submit">计算定投收益</button>
@@ -1343,17 +1463,17 @@
             <small id="compoundDuration">持有 5年 · 共 1,827 天</small>
           </div>
           <div class="metrics">
-            <div class="metric">
-              <span class="eyebrow">累计投入</span>
-              <strong id="compoundInvested">¥100,000.00</strong>
-            </div>
-            <div class="metric">
-              <span class="eyebrow">复利收益</span>
-              <strong class="positive" id="compoundProfit">+¥61,051.00</strong>
-            </div>
-            <div class="metric">
+
+            <div class="metric core-metric">
               <span class="eyebrow">累计收益率</span>
               <strong class="positive" id="compoundReturn">+61.05%</strong>
+            </div>
+            <div class="metric core-metric">
+              <span class="eyebrow">复利收益</span>
+              <strong class="positive" id="compoundProfit">+¥61,051.00</strong>
+            </div><div class="metric">
+              <span class="eyebrow">累计投入</span>
+              <strong id="compoundInvested">¥100,000.00</strong>
             </div>
             <div class="metric">
               <span class="eyebrow" id="compoundCountLabel">折算持有年限</span>
@@ -1369,7 +1489,7 @@
             </div>
           </div>
           <button class="copy-btn" id="copyCompound" type="button">复制计算结果</button>
-          <p class="result-note">买入费按每笔投入金额直接扣除；三项运作费按年合计，并从固定毛收益率中作近似扣减。“运作费影响”包含费用及其造成的少计复利，不等同于基金公司账单。未计入卖出费、交易佣金、税费、分红税、汇率、通胀及市场波动，不构成投资建议。</p>
+          <details class="result-note"><summary>计算口径与风险说明</summary><p>买入费按每笔投入金额直接扣除；三项运作费按年合计，并从固定毛收益率中作近似扣减。“运作费影响”包含费用及其造成的少计复利，不等同于基金公司账单。未计入卖出费、交易佣金、税费、分红税、汇率、通胀及市场波动，不构成投资建议。</p></details>
         </aside>
       </div>
     </section>
@@ -1406,10 +1526,10 @@
             </div>
             <div class="error-box" id="priceError" role="alert"></div>
           </form>
-          <div class="method-card">
+          <details class="method-card"><summary>计算方法说明</summary><div>
             <strong>计算口径</strong><br>
             涨跌幅 =（结束价格 − 起始价格）÷ 起始价格 × 100%；自然日间隔不重复计算起始日。
-          </div>
+          </div></details>
         </div>
 
         <aside class="result-side" aria-live="polite">
@@ -1441,7 +1561,7 @@
             </div>
           </div>
           <button class="copy-btn" id="copyPrice" type="button">复制计算结果</button>
-          <p class="result-note">价格可输入股票、指数或基金净值。本工具只计算两点之间的变化，不包含期间分红或现金派息。</p>
+          <details class="result-note"><summary>计算口径与风险说明</summary><p>价格可输入股票、指数或基金净值。本工具只计算两点之间的变化，不包含期间分红或现金派息。</p></details>
         </aside>
       </div>
     </section>
@@ -1486,10 +1606,10 @@
               </div>
             </div>
 
-            <div class="reference-index-close" aria-label="对应指数前一交易日收盘点位">
+            <div class="reference-index-close" aria-label="对应指数最近交易日收盘点位">
               <div>
                 <span id="sentimentReferenceName">纳斯达克100 · NDX 前一交易日收盘</span>
-                <strong id="sentimentReferenceClose">—</strong>
+                <div class="reference-value"><strong id="sentimentReferenceClose">—</strong><b id="sentimentReferenceChange">—</b></div><span id="sentimentReferencePrevious"></span>
               </div>
               <small id="sentimentReferenceDate">等待指数数据</small>
             </div>
@@ -1514,7 +1634,7 @@
                 <i></i><i></i><i></i><i></i><i></i><i></i>
                 <b class="gauge-marker" id="sentimentMarker" style="left: 50%"></b>
               </div>
-              <div class="gauge-labels"><span>低恐慌</span><span>5年分位</span><span>高恐慌</span></div>
+              <div class="gauge-labels"><span>低恐慌</span><span>20 · 40 · 60 · 80 · 95%</span><span>高恐慌</span></div>
             </div>
           </article>
 
@@ -1528,12 +1648,12 @@
                 <input class="with-prefix" id="sentimentBaseAmount" type="number" min="1" step="100" value="2000" inputmode="decimal">
               </div>
             </div>
-            <div class="sentiment-formula">近5年分位对应系数：0–20% 为 0.75倍，20–40% 为 0.90倍，40–60% 为 1.00倍，60–80% 为 1.20倍，80–95% 为 1.50倍，95–100% 为 1.75倍。</div>
+
             <div class="suggested-amount">
               <span>本期建议投入参考</span>
               <strong id="sentimentSuggested">—</strong>
               <small id="sentimentMultiplier">等待数据</small>
-            </div>
+            </div><div class="sentiment-formula">近5年分位对应系数：0–20% 为 0.75倍，20–40% 为 0.90倍，40–60% 为 1.00倍，60–80% 为 1.20倍，80–95% 为 1.50倍，95–100% 为 1.75倍。</div>
           </article>
         </div>
 
@@ -1607,6 +1727,12 @@
             <button class="copy-btn" id="nasdaqResetRange" type="button">全部年份</button>
             <p class="history-range-note" id="nasdaqRangeNote"></p>
           </div>
+          <div class="history-tools">
+            <label>年度筛选 <select id="nasdaqFilter"><option value="all">全部涨跌</option><option value="up">仅看上涨</option><option value="down">仅看下跌</option></select></label>
+            <label>排序 <select id="nasdaqSort"><option value="year">年份从早到晚</option><option value="newest">年份从晚到早</option><option value="best">收益从高到低</option><option value="worst">收益从低到高</option></select></label>
+            <label class="history-view-control">视图 <select id="nasdaqLayout"><option value="grid">卡片</option><option value="list">列表</option></select></label>
+            <small>筛选仅改变明细显示，不改变上方区间汇总；涨跌幅达到 ±30% 的年份加粗标记。</small>
+          </div>
           <div class="return-grid" id="nasdaqGrid" aria-label="纳斯达克100近40年年度收益率"></div>
           <p class="history-source">点位来自 Nasdaq 官方历史数据导出，年度结果与官方年度价格收益资料交叉核对。来源：<a href="https://indexes.nasdaq.com/Index/History/NDX" target="_blank" rel="noreferrer">Nasdaq NDX Historical Data</a>、<a href="https://indexes.nasdaq.com/docs/NDX%20Extended%20Presentation.pdf" target="_blank" rel="noreferrer">Nasdaq 年度价格收益</a>，截至 2025-12-31。</p>
         </article>
@@ -1638,6 +1764,12 @@
             <label for="sp500EndYear">结束年份 <select id="sp500EndYear"></select></label>
             <button class="copy-btn" id="sp500ResetRange" type="button">全部年份</button>
             <p class="history-range-note" id="sp500RangeNote"></p>
+          </div>
+          <div class="history-tools">
+            <label>年度筛选 <select id="sp500Filter"><option value="all">全部涨跌</option><option value="up">仅看上涨</option><option value="down">仅看下跌</option></select></label>
+            <label>排序 <select id="sp500Sort"><option value="year">年份从早到晚</option><option value="newest">年份从晚到早</option><option value="best">收益从高到低</option><option value="worst">收益从低到高</option></select></label>
+            <label class="history-view-control">视图 <select id="sp500Layout"><option value="grid">卡片</option><option value="list">列表</option></select></label>
+            <small>筛选仅改变明细显示，不改变上方区间汇总；涨跌幅达到 ±30% 的年份加粗标记。</small>
           </div>
           <div class="return-grid" id="sp500Grid" aria-label="标普500近40年年度收益率"></div>
           <p class="history-source">点位按各年最后一个交易日的 S&amp;P 500 价格指数收盘值整理，年度收益与 S&amp;P DJI 官方资料逐年核对。来源：<a href="https://www.spglobal.com/spdji/en/indices/equity/sp-500/" target="_blank" rel="noreferrer">S&amp;P 500 官方页面</a>、<a href="https://www.spglobal.com/spdji/en/commentary/article/us-equities-market-attributes" target="_blank" rel="noreferrer">S&amp;P DJI 年度市场资料</a>，截至 2025-12-31。</p>
@@ -1671,6 +1803,12 @@
             <button class="copy-btn" id="nikkeiResetRange" type="button">全部年份</button>
             <p class="history-range-note" id="nikkeiRangeNote"></p>
           </div>
+          <div class="history-tools">
+            <label>年度筛选 <select id="nikkeiFilter"><option value="all">全部涨跌</option><option value="up">仅看上涨</option><option value="down">仅看下跌</option></select></label>
+            <label>排序 <select id="nikkeiSort"><option value="year">年份从早到晚</option><option value="newest">年份从晚到早</option><option value="best">收益从高到低</option><option value="worst">收益从低到高</option></select></label>
+            <label class="history-view-control">视图 <select id="nikkeiLayout"><option value="grid">卡片</option><option value="list">列表</option></select></label>
+            <small>筛选仅改变明细显示，不改变上方区间汇总；涨跌幅达到 ±30% 的年份加粗标记。</small>
+          </div>
           <div class="return-grid" id="nikkeiGrid" aria-label="日经225近40年年度收益率"></div>
           <p class="history-source">点位与年度收益按 Nikkei 官方年度历史数据核对。来源：<a href="https://indexes.nikkei.co.jp/en/nkave/archives/data?list=annually" target="_blank" rel="noreferrer">Nikkei Indexes 年度历史数据</a>，截至 2025-12-30。</p>
         </article>
@@ -1702,6 +1840,12 @@
             <label for="csi300EndYear">结束年份 <select id="csi300EndYear"></select></label>
             <button class="copy-btn" id="csi300ResetRange" type="button">全部年份</button>
             <p class="history-range-note" id="csi300RangeNote"></p>
+          </div>
+          <div class="history-tools">
+            <label>年度筛选 <select id="csi300Filter"><option value="all">全部涨跌</option><option value="up">仅看上涨</option><option value="down">仅看下跌</option></select></label>
+            <label>排序 <select id="csi300Sort"><option value="year">年份从早到晚</option><option value="newest">年份从晚到早</option><option value="best">收益从高到低</option><option value="worst">收益从低到高</option></select></label>
+            <label class="history-view-control">视图 <select id="csi300Layout"><option value="grid">卡片</option><option value="list">列表</option></select></label>
+            <small>筛选仅改变明细显示，不改变上方区间汇总；涨跌幅达到 ±30% 的年份加粗标记。</small>
           </div>
           <div class="return-grid" id="csi300Grid" aria-label="沪深300自发布以来年度收益率"></div>
           <p class="history-source">沪深300基日为 2004-12-31（基点 1000），正式发布于 2005-04-08。2005 年卡片使用基点 1000 至年末 923.45 点，因此并非完整的发布后日历年。来源：<a href="https://oss-ch.csindex.com.cn/static/html/csindex/public/uploads/indices/detail/files/zh_CN/000300factsheet.pdf" target="_blank" rel="noreferrer">中证指数官方资料</a>、<a href="https://www.sse.com.cn/aboutus/publication/monthly/index/" target="_blank" rel="noreferrer">上海证券交易所统计资料</a>，截至 2025-12-31。</p>
@@ -1735,15 +1879,21 @@
             <button class="copy-btn" id="kospiResetRange" type="button">全部年份</button>
             <p class="history-range-note" id="kospiRangeNote"></p>
           </div>
+          <div class="history-tools">
+            <label>年度筛选 <select id="kospiFilter"><option value="all">全部涨跌</option><option value="up">仅看上涨</option><option value="down">仅看下跌</option></select></label>
+            <label>排序 <select id="kospiSort"><option value="year">年份从早到晚</option><option value="newest">年份从晚到早</option><option value="best">收益从高到低</option><option value="worst">收益从低到高</option></select></label>
+            <label class="history-view-control">视图 <select id="kospiLayout"><option value="grid">卡片</option><option value="list">列表</option></select></label>
+            <small>筛选仅改变明细显示，不改变上方区间汇总；涨跌幅达到 ±30% 的年份加粗标记。</small>
+          </div>
           <div class="return-grid" id="kospiGrid" aria-label="韩国KOSPI近40年年度收益率"></div>
           <p class="history-source">年度收盘点位按 KOSPI 历史年度表整理，早期数据与 SEC 披露文件、近期数据与韩国交易所披露文件交叉核对。来源：<a href="https://en.wikipedia.org/wiki/KOSPI#Annual_Returns" target="_blank" rel="noreferrer">KOSPI 年度历史表</a>、<a href="https://www.sec.gov/Archives/edgar/data/1290109/000119312511123762/d20f.htm" target="_blank" rel="noreferrer">SEC 历史点位披露</a>、<a href="https://kind.krx.co.kr/external/2026/05/14/000975/20260514002143/11013.htm" target="_blank" rel="noreferrer">KRX 披露资料</a>。截至 2025 年末；以韩元计价，不含分红与汇率变化。</p>
         </article>
 
 
-        <div class="method-card">
+        <details class="method-card"><summary>计算方法说明</summary><div>
           <strong>这里为什么只保留复合收益</strong><br>
           年度收益率 = 年末收盘点位 ÷ 年初基准点位 − 1；区间累计复利收益 = 最后点位 ÷ 起始点位 − 1；CAGR 是把整段累计变化折算成每年的复利速度。所有指数统一采用价格指数口径，不计股息再投资。历史表现不代表未来收益。
-        </div>
+        </div></details>
       </div>
     </section>
 
@@ -1761,6 +1911,7 @@
       const YEAR_DAYS = 365.2425;
       const $ = (id) => document.getElementById(id);
       const publicSiteUrl = $('publicSiteLink').href;
+      $('publicSiteLink').hidden = window.location.protocol !== 'file:';
       $('localFileNotice').hidden = window.location.protocol !== 'file:';
       $('copySiteLink').addEventListener('click', async () => {
         try {
@@ -2173,11 +2324,17 @@
         $('sentimentPreviousDate').textContent = market.previousAsOf ? `· ${market.previousAsOf}` : '';
         const referenceIndex = market.referenceIndex;
         $('sentimentReferenceName').textContent = referenceIndex
-          ? `${referenceIndex.name} · ${referenceIndex.symbol} 前一交易日收盘`
+          ? `${referenceIndex.name} · ${referenceIndex.symbol} 最近交易日收盘`
           : `${market.indexName}前一交易日收盘`;
         $('sentimentReferenceClose').textContent = referenceIndex
           ? Number(referenceIndex.close).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
           : '数据更新中';
+        const indexChange = referenceIndex?.changePercent;
+        $('sentimentReferenceChange').textContent = Number.isFinite(indexChange) ? formatPercent(indexChange) : '涨跌幅待更新';
+        $('sentimentReferenceChange').className = Number.isFinite(indexChange) ? (indexChange > 0 ? 'index-up' : indexChange < 0 ? 'index-down' : '') : '';
+        $('sentimentReferencePrevious').textContent = referenceIndex?.previousAsOf
+          ? '较 ' + referenceIndex.previousAsOf + ' 收盘 ' + formatIndexLevel(referenceIndex.previousClose)
+          : '等待前一交易日点位';
         $('sentimentReferenceDate').textContent = referenceIndex?.asOf || '等待指数数据';
         $('sentimentPercentile').textContent = `${market.percentile5y.toFixed(1)}%`;
         $('sentimentLabel').textContent = market.sentiment;
@@ -2266,6 +2423,7 @@
           end.value = String(lastYear);
           renderHistoryGrid(key);
         });
+        ['Filter', 'Sort', 'Layout'].forEach(suffix => $(key + suffix).addEventListener('change', () => renderHistoryGrid(key)));
         renderHistoryGrid(key);
       }
 
@@ -2278,13 +2436,19 @@
         const grid = $(key + 'Grid');
         grid.setAttribute('aria-label', startYear + '至' + endYear + '年年度价格收益率');
         grid.textContent = '';
+        grid.classList.toggle('list-view', $(key + 'Layout').value === 'list');
         values.forEach((endLevel, index) => {
           if (index < range.first || index > range.last) return;
           const year = series.startYear + index;
           const startLevel = index === 0 ? series.base : values[index - 1];
           const value = (endLevel / startLevel - 1) * 100;
+          const filter = $(key + 'Filter').value;
+          if ((filter === 'up' && value <= 0) || (filter === 'down' && value >= 0)) return;
           const cell = document.createElement('div');
+          cell.dataset.year = year;
+          cell.dataset.rate = value;
           cell.className = `return-cell ${value > 0 ? 'gain' : value < 0 ? 'loss' : 'flat'}`;
+          cell.classList.toggle('notable', Math.abs(value) >= 30);
           cell.setAttribute('aria-label', `${year}年，年初基准 ${formatIndexLevel(startLevel)}，年末收盘 ${formatIndexLevel(endLevel)}，收益率 ${formatHistoricalPercent(value)}`);
 
           const yearLabel = document.createElement('div');
@@ -2323,6 +2487,17 @@
           grid.appendChild(cell);
         });
 
+        const sort = $(key + 'Sort').value;
+        [...grid.children].sort((a, b) => sort === 'best' ? b.dataset.rate - a.dataset.rate :
+          sort === 'worst' ? a.dataset.rate - b.dataset.rate :
+          sort === 'newest' ? b.dataset.year - a.dataset.year : a.dataset.year - b.dataset.year
+        ).forEach(cell => grid.appendChild(cell));
+        if (!grid.children.length) {
+          const empty = document.createElement('p');
+          empty.className = 'history-empty';
+          empty.textContent = '所选年份内没有符合条件的记录。';
+          grid.appendChild(empty);
+        }
         $(key + 'CagrLabel').textContent = range.years + '年复合年化收益率（CAGR）';
         $(key + 'Cagr').textContent = range.cagr.toFixed(2) + '%';
         $(key + 'Cumulative').textContent = formatLargePercent(range.cumulative);
@@ -2356,6 +2531,14 @@
         }, 1400);
       }
 
+      document.querySelectorAll('[data-rate-target]').forEach(button => {
+        button.addEventListener('click', () => {
+          const key = button.dataset.rateTarget;
+          $(key + 'Rate').value = button.dataset.rate;
+          $(key + 'RateRange').value = button.dataset.rate;
+          key === 'lump' ? calculateLump() : calculateDca();
+        });
+      });
       document.querySelectorAll('.tab-btn').forEach((button) => {
         button.addEventListener('click', () => {
           document.querySelectorAll('.tab-btn').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
@@ -2364,6 +2547,7 @@
           $('sentimentPanel').hidden = target !== 'sentiment';
           $('pricePanel').hidden = target !== 'price';
           $('historyPanel').hidden = target !== 'history';
+          $(target + 'Panel').scrollIntoView({ block: 'start' });
         });
       });
 
@@ -2402,8 +2586,8 @@
         });
       });
 
-      $('lumpForm').addEventListener('submit', (event) => { event.preventDefault(); calculateLump(); });
-      $('dcaForm').addEventListener('submit', (event) => { event.preventDefault(); calculateDca(); });
+      $('lumpForm').addEventListener('submit', (event) => { event.preventDefault(); if (calculateLump() && innerWidth <= 840) $('compoundFinal').scrollIntoView({block:'center'}); });
+      $('dcaForm').addEventListener('submit', (event) => { event.preventDefault(); if (calculateDca() && innerWidth <= 840) $('compoundFinal').scrollIntoView({block:'center'}); });
       $('priceForm').addEventListener('submit', (event) => { event.preventDefault(); calculatePrice(); });
       bindRate('lumpRateRange', 'lumpRate', calculateLump);
       bindRate('dcaRateRange', 'dcaRate', calculateDca);
