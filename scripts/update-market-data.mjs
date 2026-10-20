@@ -55,7 +55,7 @@ function parseFredCsv(csv) {
     const [dateText, valueText] = line.split(',');
     return {
       date: new Date(`${dateText.trim()}T00:00:00Z`),
-      value: Number(valueText)
+      value: valueText?.trim() && valueText.trim() !== '.' ? Number(valueText) : NaN
     };
   }).filter((row) => !Number.isNaN(row.date.getTime()) && Number.isFinite(row.value))
     .sort((a, b) => a.date - b.date);
@@ -135,13 +135,18 @@ async function fetchSeries(source) {
 async function fetchReferenceIndex(source) {
   const response = await fetchWithRetry(source);
   const rows = parseFredCsv(await response.text());
-  if (!rows.length) throw new Error(`${source.symbol} 数据不足`);
+  if (rows.length < 2) throw new Error(`${source.symbol} 数据不足`);
   const latest = rows.at(-1);
+  const previous = rows.at(-2);
+  if (previous.value <= 0 || latest.value <= 0) throw new Error(`${source.symbol} 点位无效`);
   return {
     name: source.name,
     symbol: source.symbol,
     asOf: latest.date.toISOString().slice(0, 10),
-    close: round(latest.value)
+    close: round(latest.value),
+    previousAsOf: previous.date.toISOString().slice(0, 10),
+    previousClose: round(previous.value),
+    changePercent: round((latest.value / previous.value - 1) * 100)
   };
 }
 
