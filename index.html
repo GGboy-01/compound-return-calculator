@@ -1166,11 +1166,11 @@
       .history-range label { flex:1 1 120px; flex-direction:column; align-items:flex-start; gap:5px; font-size:12px; }
       .history-range select { width:100%; }
       .history-range-note { font-size:12px; }
-      .return-grid { grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; }
-      .return-grid .return-cell { min-height:58px; padding:6px 2px; border-radius:9px; }
-      .return-grid .return-year { margin-bottom:3px; font-size:8px; }
-      .return-grid .return-rate { margin-top:3px; font-size:13px; }
-      .return-grid .return-close { margin-top:2px; font-size:8px; }
+      .return-grid { grid-template-columns:repeat(5,minmax(0,1fr)); gap:4px; padding:6px; }
+      .return-grid .return-cell { min-height:58px; padding:6px 2px; border-radius:9px; overflow:hidden; }
+      .return-grid .return-year { margin-bottom:3px; font-size:8px; white-space:nowrap; }
+      .return-grid .return-rate { margin-top:3px; font-size:12px; white-space:nowrap; }
+      .return-grid .return-close { margin-top:2px; font-size:8px; white-space:nowrap; }
       .sentiment-stat-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
       .sentiment-stat { padding:12px 8px; }
       .sentiment-stat strong { font-size:16px; }
@@ -2410,6 +2410,9 @@
           grid.appendChild(cell);
         });
 
+        // 窄屏卡片自适应：仅在网格可见时执行（隐藏时尺寸为 0 无法测量）
+        if (grid.clientWidth > 0) fitYearGridText(grid);
+
         if (!grid.children.length) {
           const empty = document.createElement('p');
           empty.className = 'history-empty';
@@ -2425,6 +2428,27 @@
           formatIndexLevel(range.startLevel) + ' → ' + endYear + ' 年末 ' + formatIndexLevel(range.endLevel) +
           ' 计算，共 ' + range.years + ' 年。CAGR =（期末点位 ÷ 起始点位）^(1 ÷ 年数) − 1；不含分红。';
 
+      }
+
+      // 窄屏卡片自适应：涨跌幅或收盘点位若超出卡片内容宽度，自动微缩字号，防止数字被裁剪
+      function fitYearGridText(grid) {
+        if (!grid || !grid.children.length) return;
+        void grid.offsetWidth; // 强制同步布局后再测量
+        grid.querySelectorAll('.return-rate, .return-close, .return-year').forEach((el) => {
+          const cell = el.closest('.return-cell');
+          if (!cell) return;
+          void cell.offsetWidth;
+          const cs = getComputedStyle(cell);
+          const avail = cell.clientWidth - (parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight));
+          let size = parseFloat(getComputedStyle(el).fontSize);
+          let guard = 0;
+          while (el.scrollWidth > avail + 1 && size > 7 && guard < 12) {
+            size -= 0.5;
+            el.style.fontSize = size + 'px';
+            void el.offsetWidth; // 改字号后强制 reflow 再判定
+            guard++;
+          }
+        });
       }
 
       async function copyText(text, button) {
@@ -2456,6 +2480,10 @@
         Object.keys(historicalReturns).forEach((key) => {
           $(`${key}View`).hidden = key !== indexName;
         });
+        // 切换指数后按当前可见宽度做卡片字号自适应
+        document.querySelectorAll('.return-grid').forEach((grid) => {
+          if (grid.clientWidth > 0) fitYearGridText(grid);
+        });
       }
 
       document.querySelectorAll('[data-rate-target]').forEach(button => {
@@ -2475,6 +2503,11 @@
           $('pricePanel').hidden = target !== 'price';
           $('historyPanel').hidden = target !== 'history';
           $(target + 'Panel').scrollIntoView({ block: 'start' });
+          if (target === 'history') {
+            document.querySelectorAll('.return-grid').forEach((grid) => {
+              if (grid.clientWidth > 0) fitYearGridText(grid);
+            });
+          }
         });
       });
 
