@@ -876,8 +876,8 @@
       display: inline-block;
     }
 
-    .history-legend .up { background: #C23B30; }
-    .history-legend .down { background: #087C59; }
+    .history-legend .up { background: #B04A41; }
+    .history-legend .down { background: #639064; }
 
     .index-switch {
       display: grid;
@@ -950,13 +950,9 @@
       text-align: center;
     }
 
-    .return-cell.gain { background: #C23B30; }
-    .return-cell.loss { background: #087C59; }
+    .return-cell.gain { background: #B04A41; }
+    .return-cell.loss { background: #639064; }
     .return-cell.flat { background: #78827f; }
-    .return-cell.notable { border-width: 2px; }
-    .return-cell.gain.notable { background: #A92F24; border-color: rgba(255,255,255,.9); }
-    .return-cell.loss.notable { background: #06684A; border-color: rgba(255,255,255,.9); }
-    .return-cell.notable .return-rate { font-weight: 900; }
 
     .return-year {
       margin-bottom: 6px;
@@ -1186,8 +1182,7 @@
 
     .index-mobile-select { display:none; }
     @media(max-width:640px) {
-      /* 手机端：四个模块同页纵向展示，顶部导航改为锚点跳转 */
-      section.panel[hidden] { display:block !important; }
+      /* 手机端：顶部导航吸顶，四个模块仍通过标签切换显示（与桌面端一致） */
       .main-tabs {
         position:sticky; top:0; z-index:50;
         width:100%; max-width:none; margin:0 0 14px;
@@ -2397,7 +2392,6 @@
           cell.dataset.year = year;
           cell.dataset.rate = value;
           cell.className = `return-cell ${value > 0 ? 'gain' : value < 0 ? 'loss' : 'flat'}`;
-          cell.classList.toggle('notable', Math.abs(value) >= 30);
           cell.setAttribute('aria-label', `${year}年，年末收盘 ${formatIndexLevel(endLevel)}，收益率 ${formatHistoricalPercent(value)}`);
 
           const yearLabel = document.createElement('div');
@@ -2476,16 +2470,11 @@
         button.addEventListener('click', () => {
           document.querySelectorAll('.tab-btn').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
           const target = button.dataset.tab;
-          if (window.matchMedia('(max-width: 640px)').matches) {
-            // 手机端：四个模块同页展示，导航仅做锚点跳转
-            $(target + 'Panel').scrollIntoView({ block: 'start' });
-          } else {
-            $('compoundPanel').hidden = target !== 'compound';
-            $('sentimentPanel').hidden = target !== 'sentiment';
-            $('pricePanel').hidden = target !== 'price';
-            $('historyPanel').hidden = target !== 'history';
-            $(target + 'Panel').scrollIntoView({ block: 'start' });
-          }
+          $('compoundPanel').hidden = target !== 'compound';
+          $('sentimentPanel').hidden = target !== 'sentiment';
+          $('pricePanel').hidden = target !== 'price';
+          $('historyPanel').hidden = target !== 'history';
+          $(target + 'Panel').scrollIntoView({ block: 'start' });
         });
       });
 
