@@ -2352,13 +2352,13 @@
         lastSentimentFetch = Date.now();
         const cacheKey = Math.floor(Date.now() / 300000);
         const urls = [
-          `https://raw.githubusercontent.com/GGboy-01/compound-return-calculator/main/data/market-sentiment.json?v=${cacheKey}`,
-          `data/market-sentiment.json?v=${cacheKey}`
+          `data/market-sentiment.json?v=3-${cacheKey}`,
+          `https://raw.githubusercontent.com/GGboy-01/compound-return-calculator/main/data/market-sentiment.json?v=3-${cacheKey}`
         ];
         let loaded = null;
         for (const url of urls) {
           try {
-            const response = await fetch(url, { cache: 'no-store' });
+            const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(8000) });
             if (!response.ok) continue;
             const candidate = await response.json();
             if (candidate && candidate.markets && candidate.markets.nasdaq100 && candidate.markets.sp500) {
