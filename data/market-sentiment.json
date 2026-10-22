@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-21T09:28:51.541Z",
+  "generatedAt": "2026-10-22T09:32:07.519Z",
   "methodology": {
     "window": "5年交易日",
     "percentile": "当前收盘值在近5年每日收盘值中的经验分位",
@@ -54,12 +54,12 @@
     "sp500": {
       "indexName": "标普500",
       "indicator": "VIX",
-      "asOf": "2026-10-20",
-      "close": 17.31,
-      "previousAsOf": "2026-10-19",
-      "previousClose": 18.44,
-      "changePercent": -6.13,
-      "percentile5y": 47.8,
+      "asOf": "2026-10-21",
+      "close": 16.68,
+      "previousAsOf": "2026-10-20",
+      "previousClose": 17.31,
+      "changePercent": -3.64,
+      "percentile5y": 40.5,
       "sampleSize": 1288,
       "multiplier": 1,
       "sentiment": "正常",
@@ -67,22 +67,22 @@
       "referenceIndex": {
         "name": "标普500",
         "symbol": "SPX",
-        "asOf": "2026-10-20",
-        "close": 7712.57,
-        "previousAsOf": "2026-10-19",
-        "previousClose": 7690.73,
-        "changePercent": 0.28
+        "asOf": "2026-10-21",
+        "close": 7757.17,
+        "previousAsOf": "2026-10-20",
+        "previousClose": 7712.57,
+        "changePercent": 0.58
       }
     },
     "nasdaq100": {
       "indexName": "纳斯达克100",
       "indicator": "VXN",
-      "asOf": "2026-10-20",
-      "close": 25.22,
-      "previousAsOf": "2026-10-19",
-      "previousClose": 25.56,
-      "changePercent": -1.33,
-      "percentile5y": 66.2,
+      "asOf": "2026-10-21",
+      "close": 24.42,
+      "previousAsOf": "2026-10-20",
+      "previousClose": 25.22,
+      "changePercent": -3.17,
+      "percentile5y": 62.2,
       "sampleSize": 1256,
       "multiplier": 1.2,
       "sentiment": "偏恐慌",
@@ -90,11 +90,11 @@
       "referenceIndex": {
         "name": "纳斯达克100",
         "symbol": "NDX",
-        "asOf": "2026-10-20",
-        "close": 29490.28,
-        "previousAsOf": "2026-10-19",
-        "previousClose": 29529.34,
-        "changePercent": -0.13
+        "asOf": "2026-10-21",
+        "close": 29822.52,
+        "previousAsOf": "2026-10-20",
+        "previousClose": 29490.28,
+        "changePercent": 1.13
       }
     }
   }
