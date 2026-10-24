@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-24T01:36:31.819Z",
+  "generatedAt": "2026-10-24T08:59:15.959Z",
   "methodology": {
     "window": "5年交易日",
     "percentile": "当前收盘值在近5年每日收盘值中的经验分位",
@@ -90,11 +90,11 @@
       "referenceIndex": {
         "name": "纳斯达克100",
         "symbol": "NDX",
-        "asOf": "2026-10-22",
-        "close": 28958.69,
-        "previousAsOf": "2026-10-21",
-        "previousClose": 29822.52,
-        "changePercent": -2.9
+        "asOf": "2026-10-23",
+        "close": 28957.53,
+        "previousAsOf": "2026-10-22",
+        "previousClose": 28958.69,
+        "changePercent": 0
       }
     }
   }
