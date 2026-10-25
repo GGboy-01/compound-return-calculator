@@ -33,11 +33,11 @@
   },
   "updatePolicy": {
     "timezone": "America/New_York",
-    "scheduledLocalTime": "17:30",
-    "backupLocalTime": "19:17",
-    "indexValidationLocalTime": "00:30（次一交易日）",
-    "chinaDaylightTime": "次日 05:30",
-    "chinaStandardTime": "次日 06:30",
+    "scheduledLocalTime": "16:30",
+    "backupLocalTime": "16:50 / 17:30",
+    "indexValidationLocalTime": "00:45（次一交易日）",
+    "chinaDaylightTime": "次日 04:30",
+    "chinaStandardTime": "次日 05:30",
     "browserRefreshMinutes": 15
   },
   "source": {
