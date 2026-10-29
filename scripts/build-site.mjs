@@ -1,3 +1,4 @@
 import fs from 'node:fs/promises';
-const files=['index.html','app.js','live-data.js','core.js','r1-core.js','style.css','r1-layout.css','legacy-calculator.html'];
-await fs.mkdir('.runtime/site/data',{recursive:true});for(const f of files)await fs.copyFile(f,'.runtime/site/'+f);for(const f of ['dashboard-seed.json.gz','dashboard-updates.json','market-sentiment.json'])await fs.copyFile('data/'+f,'.runtime/site/data/'+f);await fs.writeFile('.runtime/site/.nojekyll','');console.log('Public assets staged');
+await import('./build-map.mjs');
+const files=['index.html','price-core.js','price-view.js','wave-core.js','seed.js','map-style.css','legacy-calculator.html'];
+await fs.mkdir('.runtime/site-v10/data',{recursive:true});for(const f of files)await fs.copyFile(f,'.runtime/site-v10/'+f);for(const f of ['price-map.json','etf-tracking.json','us-etf-rankings.json','us-history-audit.json','market-sentiment.json'])await fs.copyFile('data/'+f,'.runtime/site-v10/data/'+f);await fs.writeFile('.runtime/site-v10/.nojekyll','');console.log('V10 public assets staged');

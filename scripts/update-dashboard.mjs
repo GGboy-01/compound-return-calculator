@@ -17,7 +17,7 @@ async function fred(code,start,end){const id=code==='NDX'?'NASDAQ100':'SP500',ur
 export async function fetchChecked(item,start,target){
  if(item.market==='us'){
   const primary=await yahoo(item.code==='NDX'?'^NDX':'^GSPC',start,target);primary.rows=primary.rows.map(r=>({...r,close:Math.round(r.close*100)/100}));valid(primary.rows,target);
-  let second;try{second=await em(item.secid,start,target);valid(second.rows,target);verify(primary.rows,second.rows,.08)}catch{second=await fred(item.code,start,target);valid(second.rows,target);verify(primary.rows,second.rows,.08)}
+  const second=await fred(item.code,start,target);valid(second.rows,target);verify(primary.rows,second.rows,.08);
   return{history:primary.rows,source:primary.source,verificationSource:second.source,date:target,price:primary.rows.at(-1).close,verifiedAt:new Date().toISOString()};
  }
 

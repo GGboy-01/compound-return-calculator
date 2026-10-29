@@ -1,0 +1,114 @@
+[
+  {
+    "code": "513100",
+    "name": "纳指ETF国泰",
+    "index": "NDX",
+    "target": "纳斯达克100指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_513100.html"
+  },
+  {
+    "code": "513300",
+    "name": "纳斯达克ETF华夏",
+    "index": "NDX",
+    "target": "纳斯达克100指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_513300.html"
+  },
+  {
+    "code": "159501",
+    "name": "纳指ETF嘉实",
+    "index": "NDX",
+    "target": "纳斯达克100指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_159501.html"
+  },
+  {
+    "code": "159513",
+    "name": "纳斯达克100ETF大成",
+    "index": "NDX",
+    "target": "纳斯达克100指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_159513.html"
+  },
+  {
+    "code": "159632",
+    "name": "纳斯达克ETF华安",
+    "index": "NDX",
+    "target": "纳斯达克100指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_159632.html"
+  },
+  {
+    "code": "159659",
+    "name": "纳斯达克100ETF招商",
+    "index": "NDX",
+    "target": "纳斯达克100指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_159659.html"
+  },
+  {
+    "code": "159660",
+    "name": "纳指ETF汇添富",
+    "index": "NDX",
+    "target": "纳斯达克100指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_159660.html"
+  },
+  {
+    "code": "159696",
+    "name": "纳指ETF易方达",
+    "index": "NDX",
+    "target": "纳斯达克100指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_159696.html"
+  },
+  {
+    "code": "159941",
+    "name": "纳指ETF广发",
+    "index": "NDX",
+    "target": "纳斯达克100指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_159941.html"
+  },
+  {
+    "code": "513110",
+    "name": "纳指ETF华泰柏瑞",
+    "index": "NDX",
+    "target": "纳斯达克100指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_513110.html"
+  },
+  {
+    "code": "513390",
+    "name": "纳指100ETF博时",
+    "index": "NDX",
+    "target": "纳斯达克100指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_513390.html"
+  },
+  {
+    "code": "513870",
+    "name": "纳指ETF富国",
+    "index": "NDX",
+    "target": "纳斯达克100指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_513870.html"
+  },
+  {
+    "code": "513500",
+    "name": "标普500ETF博时",
+    "index": "SPX",
+    "target": "标准普尔500指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_513500.html"
+  },
+  {
+    "code": "159612",
+    "name": "标普500ETF国泰",
+    "index": "SPX",
+    "target": "标准普尔500指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_159612.html"
+  },
+  {
+    "code": "159655",
+    "name": "标普500ETF华夏",
+    "index": "SPX",
+    "target": "标准普尔500指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_159655.html"
+  },
+  {
+    "code": "513650",
+    "name": "标普500ETF南方",
+    "index": "SPX",
+    "target": "标准普尔500指数",
+    "source": "https://fundf10.eastmoney.com/jbgk_513650.html"
+  }
+]

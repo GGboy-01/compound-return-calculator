@@ -16,6 +16,8 @@ on:
       timezone: Asia/Shanghai
     - cron: '10 16 * * 1-5'
       timezone: Asia/Shanghai
+    - cron: '30 20 * * 1-5'
+      timezone: Asia/Shanghai
     - cron: '30 16 * * 1-5'
       timezone: America/New_York
     - cron: '50 16 * * 1-5'
@@ -69,11 +71,15 @@ jobs:
         run: |
           market="$REQUESTED_MARKET"
           case "$SCHEDULE" in
-            '30 15 * * 1-5'|'50 15 * * 1-5'|'10 16 * * 1-5') market=cn ;;
+            '30 15 * * 1-5'|'50 15 * * 1-5'|'10 16 * * 1-5'|'30 20 * * 1-5') market=cn ;;
             '') ;;
             *) market=us ;;
           esac
-          node scripts/update-dashboard.mjs "$market"
+          node scripts/update-price-map.mjs "$market" || price_status=$?
+          if [ "$market" != "us" ]; then
+            node scripts/update-etf-rankings.mjs || etf_status=$?
+          fi
+          if [ "${price_status:-0}" != "0" ] || [ "${etf_status:-0}" != "0" ]; then exit 1; fi
       - name: Refresh independent market sentiment module
         if: github.event.schedule != '30 15 * * 1-5' && github.event.schedule != '50 15 * * 1-5' && github.event.schedule != '10 16 * * 1-5'
         continue-on-error: true
@@ -82,7 +88,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/dashboard-updates.json data/market-sentiment.json
+          git add data/price-map.json data/us-etf-rankings.json data/us-etf-catalog.json data/market-sentiment.json
           if ! git diff --cached --quiet; then
             git commit -m 'data: refresh validated market closes and status'
             git pull --rebase origin main
@@ -93,12 +99,12 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .runtime/site
+          path: .runtime/site-v10
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
       - name: Report incomplete market update
         if: steps.refresh.outcome == 'failure'
         run: |
-          echo 'Some prices were not verified. Previous values and actual dates remain published; check data/dashboard-updates.json.'
+          echo 'Some prices were not verified. Previous values and actual dates remain published; check data/price-map.json and data/us-etf-rankings.json.'
           exit 1
