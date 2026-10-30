@@ -8,3 +8,11 @@ test('最大回撤遵守先高后低，不把低点前的上涨倒算成下跌',
 test('ETF优选剔除过期和无效数据；接近溢价才比较年费率',()=>{const rows=[{code:'a',date:'2026-10-28',valid:true,premium:.01,fee:.01,turnover:1},{code:'b',date:'2026-10-28',valid:true,premium:.0105,fee:.005,turnover:1},{code:'c',date:'2026-10-28',valid:true,premium:.02,fee:.001,turnover:1},{code:'stale',date:'2026-10-27',valid:true,premium:-.5,fee:0},{code:'invalid',date:'2026-10-28',valid:false,premium:-.5,fee:0}];assert.deepEqual(selectCandidates(rows,'2026-10-28').map(x=>x.code),['b','a','c']);assert.equal(selectCandidates([], '2026-10-28').length,0);});
 test('只解析JSON数据，不执行外部页面脚本；费率缺失不默认为0',()=>{const x={rows:[{fund:{code:'159513',kind:'etf'},quote:{price_basis:'close'}}]},chunk='41:'+JSON.stringify(x)+'\n',html='<script>self.__next_f.push('+JSON.stringify([1,chunk])+')</script>';assert.equal(extractRows(html)[0].fund.code,'159513');assert.equal(parseFee('<th>管理费率</th><td>0.80%（每年）</td>','管理费率'),.008);assert.throws(()=>parseFee('没有费率','托管费率'));});
 test('分批成本按金额/份额计算；未篡改原A股排名',()=>{const r=P.plan(1000,[.3,.4,.5],[8,10,12],300000);assert(Math.abs(r.cost-575.8683729433273)<1e-9);const t=JSON.parse(fs.readFileSync(new URL('../data/etf-tracking.json',import.meta.url)));assert.deepEqual(t.rankings.find(x=>x.code==='000688').top3.map(x=>x.code),['588080','588000','588050']);assert.equal(t.end,'2026-10-28');});
+
+import {collectCN} from '../scripts/update-price-map.mjs';
+test('官方新数据晚到时仍保存已核验的中间交易日，保持真实日期',async()=>{
+ const original=globalThis.fetch;
+ try{globalThis.fetch=async()=>({ok:true,json:async()=>({data:[{tradeDate:'20261028',close:100},{tradeDate:'20261029',close:99}]})});
+ const result=await collectCN('000688','2026-10-30');assert.equal(result.latestDate,'2026-10-29');assert.equal(result.history.at(-1).close,99);
+ }finally{globalThis.fetch=original;}
+});
