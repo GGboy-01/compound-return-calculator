@@ -71,12 +71,6 @@ jobs:
             *) market=us ;;
           esac
           node scripts/update-price-map.mjs "$market" || price_status=$?
-          if [ "$market" != "us" ]; then
-            node scripts/update-etf-rankings.mjs || etf_status=$?
-          fi
-          if [ "${etf_status:-0}" != "0" ]; then
-            echo 'ETF candidates incomplete; see data/us-etf-rankings.json. Verified index closes remain publishable.' >> "$GITHUB_STEP_SUMMARY"
-          fi
           if [ "${price_status:-0}" != "0" ]; then exit 1; fi
       - name: Refresh independent market sentiment module
         if: github.event.schedule != '30 15 * * 1-5' && github.event.schedule != '50 15 * * 1-5' && github.event.schedule != '10 16 * * 1-5'
@@ -88,7 +82,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/price-map.json data/us-etf-rankings.json data/us-etf-catalog.json data/market-sentiment.json seed.js
+          git add data/price-map.json data/market-sentiment.json seed.js
           if ! git diff --cached --quiet; then
             git commit -m 'data: refresh validated market closes and status'
             git pull --rebase origin main

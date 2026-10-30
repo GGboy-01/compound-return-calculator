@@ -1198,7 +1198,14 @@
       .index-switch { display:none; }
     }
 
+    html.embedded body { background: transparent; }
+    html.embedded .shell { width: 100%; max-width: none; margin: 0; padding: 0; }
+    html.embedded .hero, html.embedded .share-site, html.embedded footer { display: none !important; }
+    html.embedded .main-tabs { margin: 0 0 18px; }
+    html.embedded .main-tabs [data-tab="sentiment"] { display: none !important; }
+    html.embed-sentiment .main-tabs { display: none !important; }
   </style>
+  <script>if(new URLSearchParams(location.search).has('embedded'))document.documentElement.classList.add('embedded');</script>
 </head>
 <body>
   <main class="shell">
@@ -2502,7 +2509,7 @@
           $('sentimentPanel').hidden = target !== 'sentiment';
           $('pricePanel').hidden = target !== 'price';
           $('historyPanel').hidden = target !== 'history';
-          $(target + 'Panel').scrollIntoView({ block: 'start' });
+          if (!document.documentElement.classList.contains('embedded')) $(target + 'Panel').scrollIntoView({ block: 'start' });
           if (target === 'history') {
             document.querySelectorAll('.return-grid').forEach((grid) => {
               if (grid.clientWidth > 0) fitYearGridText(grid);
@@ -2612,13 +2619,19 @@
       Object.keys(historicalReturns).forEach(initHistoryRange);
     })();
   </script>
-<script>window.addEventListener('message',function(e){if(e.source!==window.parent||e.data?.type!=='legacy-view')return;const tab=e.data.view==='sentiment'?'sentiment':'compound';document.querySelector('[data-tab="'+tab+'"]')?.click();});</script></body>
-</html>
-
 <script>
-if(new URLSearchParams(location.search).has('embedded')){
- document.querySelector('header')?.setAttribute('hidden','');
- const nav=document.querySelector('.tabs');
- window.addEventListener('message',e=>{if(e.source!==parent||e.data?.type!=='legacy-view')return;document.querySelectorAll('[data-tab]').forEach(b=>{b.hidden=e.data.view==='sentiment'?b.dataset.tab!=='sentiment':b.dataset.tab==='sentiment';});});
+if(document.documentElement.classList.contains('embedded')){
+ const shell=document.querySelector('.shell');
+ const reportHeight=()=>parent.postMessage({type:'legacy-height',height:Math.ceil(shell.getBoundingClientRect().height)+2},'*');
+ window.addEventListener('message',e=>{
+  if(e.source!==parent||e.data?.type!=='legacy-view')return;
+  const sentiment=e.data.view==='sentiment';
+  document.documentElement.classList.toggle('embed-sentiment',sentiment);
+  document.querySelector('[data-tab="'+(sentiment?'sentiment':'compound')+'"]')?.click();
+  requestAnimationFrame(reportHeight);
+ });
+ new ResizeObserver(reportHeight).observe(shell);
+ window.addEventListener('load',reportHeight);
 }
-</script>
+</script></body>
+</html>
