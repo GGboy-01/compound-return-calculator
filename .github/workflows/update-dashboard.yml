@@ -32,8 +32,6 @@ on:
       timezone: America/New_York
 permissions:
   contents: write
-  pages: write
-  id-token: write
 concurrency:
   group: investment-dashboard-publish
   cancel-in-progress: false
@@ -41,9 +39,6 @@ jobs:
   update-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -87,25 +82,18 @@ jobs:
         if: github.event.schedule != '30 15 * * 1-5' && github.event.schedule != '50 15 * * 1-5' && github.event.schedule != '10 16 * * 1-5'
         continue-on-error: true
         run: node scripts/update-market-data.mjs
+      - name: Rebuild embedded offline snapshot
+        run: node scripts/build-map.mjs
       - name: Commit actual data dates and update status
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/price-map.json data/us-etf-rankings.json data/us-etf-catalog.json data/market-sentiment.json
+          git add data/price-map.json data/us-etf-rankings.json data/us-etf-catalog.json data/market-sentiment.json seed.js
           if ! git diff --cached --quiet; then
             git commit -m 'data: refresh validated market closes and status'
             git pull --rebase origin main
             git push
           fi
-      - name: Prepare public website
-        run: node scripts/build-site.mjs
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .runtime/site-v10
-      - name: Deploy GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
       - name: Report incomplete market update
         if: steps.refresh.outcome == 'failure'
         run: |
