@@ -9,7 +9,7 @@ test('ETF优选剔除过期和无效数据；接近溢价才比较年费率',()=
 test('只解析JSON数据，不执行外部页面脚本；费率缺失不默认为0',()=>{const x={rows:[{fund:{code:'159513',kind:'etf'},quote:{price_basis:'close'}}]},chunk='41:'+JSON.stringify(x)+'\n',html='<script>self.__next_f.push('+JSON.stringify([1,chunk])+')</script>';assert.equal(extractRows(html)[0].fund.code,'159513');assert.equal(parseFee('<th>管理费率</th><td>0.80%（每年）</td>','管理费率'),.008);assert.throws(()=>parseFee('没有费率','托管费率'));});
 test('分批成本按金额/份额计算；未篡改原A股排名',()=>{const r=P.plan(1000,[.3,.4,.5],[8,10,12],300000);assert(Math.abs(r.cost-575.8683729433273)<1e-9);const t=JSON.parse(fs.readFileSync(new URL('../data/etf-tracking.json',import.meta.url)));assert.deepEqual(t.rankings.find(x=>x.code==='000688').top3.map(x=>x.code),['588080','588000','588050']);assert.equal(t.end,'2026-10-28');});
 
-import {collectCN} from '../scripts/update-price-map.mjs';
+import {collectCN,verifiedAltCN,verifiedAltSPX} from '../scripts/update-price-map.mjs';
 test('官方新数据晚到时仍保存已核验的中间交易日，保持真实日期',async()=>{
  const original=globalThis.fetch;
  try{globalThis.fetch=async()=>({ok:true,json:async()=>({data:[{tradeDate:'20261028',close:100},{tradeDate:'20261029',close:99}]})});
@@ -21,6 +21,29 @@ test('完整历史缓存落后时以官方短窗口补齐最新收盘',async()=>
  const original=globalThis.fetch;let calls=0;
  try{globalThis.fetch=async()=>({ok:true,json:async()=>({data:++calls===1?[{tradeDate:'20261029',close:99}]:[{tradeDate:'20261029',close:99},{tradeDate:'20261030',close:98}]})});
  const result=await collectCN('000688','2026-10-30');assert.equal(result.latestDate,'2026-10-30');assert.equal(result.history.length,2);assert.equal(result.history.at(-1).close,98);assert.match(result.tailSource,/20261026/);
+ }finally{globalThis.fetch=original;}
+});
+
+test('备用A股收盘必须同日双源一致',async()=>{
+ const original=globalThis.fetch;
+ try{
+  let mismatch=false;
+  globalThis.fetch=async url=>({ok:true,json:async()=>String(url).includes('eastmoney')?{data:{klines:['2026-10-30,1,1160.84']}}:{data:{sh000688:{day:[['2026-10-30','1',mismatch?'1160.20':'1160.84']]}}}});
+  const result=await verifiedAltCN('000688','2026-10-29','2026-10-30');
+  assert.deepEqual(result.rows,[{date:'2026-10-30',close:1160.84}]);
+  mismatch=true;
+  await assert.rejects(verifiedAltCN('000688','2026-10-29','2026-10-30'),/不一致/);
+ }finally{globalThis.fetch=original;}
+});
+
+test('备用标普收盘必须有同日收盘时刻及一致点位',async()=>{
+ const original=globalThis.fetch;
+ try{
+  const quote=[];quote[2]='.INX';quote[3]='7720.39';quote[30]='2026-10-29 16:32:47';
+  globalThis.fetch=async url=>({ok:true,json:async()=>String(url).includes('eastmoney')?{data:{klines:['2026-10-29,1,7720.39']}}:{data:{usINX:{qt:{usINX:quote}}}}});
+  assert.deepEqual((await verifiedAltSPX('2026-10-29')).row,{date:'2026-10-29',close:7720.39});
+  quote[3]='7721.39';
+  await assert.rejects(verifiedAltSPX('2026-10-29'),/不一致/);
  }finally{globalThis.fetch=original;}
 });
 
