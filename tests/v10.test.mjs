@@ -16,3 +16,16 @@ test('官方新数据晚到时仍保存已核验的中间交易日，保持真�
  const result=await collectCN('000688','2026-10-30');assert.equal(result.latestDate,'2026-10-29');assert.equal(result.history.at(-1).close,99);
  }finally{globalThis.fetch=original;}
 });
+
+test('完整历史缓存落后时以官方短窗口补齐最新收盘',async()=>{
+ const original=globalThis.fetch;let calls=0;
+ try{globalThis.fetch=async()=>({ok:true,json:async()=>({data:++calls===1?[{tradeDate:'20261029',close:99}]:[{tradeDate:'20261029',close:99},{tradeDate:'20261030',close:98}]})});
+ const result=await collectCN('000688','2026-10-30');assert.equal(result.latestDate,'2026-10-30');assert.equal(result.history.length,2);assert.equal(result.history.at(-1).close,98);assert.match(result.tailSource,/20261026/);
+ }finally{globalThis.fetch=original;}
+});
+
+import {retainVerified} from '../scripts/update-etf-rankings.mjs';
+test('同日已核验ETF不被瞬时网络错误擦除，跨日不能混用',()=>{
+ const row={code:'159513',index:'NDX',date:'2026-10-30',valid:false,error:'timeout'},old={checkedAt:'before',groups:{NDX:{rows:[{...row,valid:true,error:null,quoteTime:'20261030150000'}]}}};
+ assert.equal(retainVerified(row,old,'2026-10-30','now').valid,true);assert.equal(retainVerified(row,old,'2026-10-30','now').lastVerifiedAt,'before');assert.equal(retainVerified(row,old,'2026-11-02','now').valid,false);
+});
