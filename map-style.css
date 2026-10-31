@@ -10,13 +10,16 @@
 
 /* Color gives each comparison a distinct role; only the daily move uses direction colors. */
 .daily{background:linear-gradient(112deg,#153f35 0%,#123f40 64%,#193a4f 100%)}
-.daily-price{flex-basis:245px}
-.day-move{display:inline-flex;align-items:center;justify-content:flex-end;gap:10px;margin:4px 0 8px;padding:5px 11px;border:1px solid transparent;border-radius:9px;font-variant-numeric:tabular-nums}
+.daily-price{flex:0 0 292px;min-width:0;display:flex;flex-direction:column;align-items:flex-end;gap:9px;padding:16px 19px;border:1px solid #ffffff20;border-radius:13px;background:#071e281f;text-align:right}
+.daily-price strong{font-size:clamp(32px,2.8vw,45px);line-height:1.12}
+.day-move{display:flex;align-items:center;justify-content:flex-end;align-self:flex-end;gap:10px;margin:0;padding:5px 11px;border:1px solid transparent;border-radius:9px;font-variant-numeric:tabular-nums}
 .day-move span{font-size:11px;font-weight:600}
 .day-move b{font-size:24px;line-height:1.2;white-space:nowrap}
 .day-move.up{color:#ffb8a9;background:#633d40;border-color:#9d6060}
 .day-move.down{color:#b8efd4;background:#21574d;border-color:#3f8170}
 .day-move.flat{color:#f0d996;background:#4e523e;border-color:#817d50}
+.daily-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px;width:100%;color:#c9ded7;font-size:12px;line-height:1.45;white-space:nowrap}
+.daily-stale{color:#f7d994;white-space:normal}
 .metric{position:relative;overflow:hidden;box-shadow:0 5px 16px #193e3510}
 .metric::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--metric-accent)}
 .metric:nth-child(1){--metric-accent:#b9783d;background:#fff9f0;border-color:#eadcc8}
@@ -25,4 +28,5 @@
 .metric:nth-child(4){--metric-accent:#796ca6;background:#faf8fd;border-color:#e0daee}
 .metric strong{color:var(--metric-accent)}
 #legacyFrame{height:1px;min-height:0;background:transparent;border-radius:0}
-@media(max-width:720px){.daily-price{display:grid;grid-template-columns:auto 1fr;align-items:center;text-align:left;gap:4px 12px}.daily-price strong{font-size:35px}.daily-price small{grid-column:1/-1}.day-move{justify-self:end;gap:5px;margin:0;padding:4px 7px}.day-move span{font-size:9px}.day-move b{font-size:17px}}
+@media(max-width:1000px) and (min-width:721px){.daily-price{flex-basis:270px}}
+@media(max-width:720px){.daily-price{width:100%;flex-basis:auto;align-items:flex-start;text-align:left;margin-top:16px;padding:14px 15px;gap:7px}.daily-price strong{font-size:35px}.day-move{align-self:flex-start;gap:8px;padding:4px 9px}.day-move span{font-size:10px}.day-move b{font-size:20px}.daily-meta{align-items:flex-start;white-space:normal;font-size:11px}}
