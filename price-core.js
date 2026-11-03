@@ -1,10 +1,9 @@
 (function(root){'use strict';
 const META={
- '000680':{name:'科创综指',base:'2019-12-31',release:'2025-01-20',scope:'含分红',highYears:[2020,2021],lowWindow:['2020-01-01','2025-01-01']},
  '000688':{name:'科创50',base:'2019-12-31',release:'2020-07-23',scope:'价格指数',highYears:[2020,2021],lowWindow:['2020-01-01','2025-01-01']},
  '000698':{name:'科创100',base:'2019-12-31',release:'2023-08-07',scope:'价格指数',highYears:[2020,2021],lowWindow:['2020-01-01','2025-01-01']},
  '000699':{name:'科创200',base:'2022-12-30',release:'2024-08-20',scope:'价格指数',highYears:[2023],lowWindow:['2022-12-30','2025-01-01']},
- '399006':{name:'创业板指',base:'2010-05-31',release:'2010-06-01',scope:'价格指数',highYears:[2015,2021],lowWindow:['2015-01-01','2020-01-01']},
+ '399006':{name:'创业板指',base:'2010-05-31',release:'2010-06-01',scope:'价格指数',highYears:[2015,2021],lowWindow:['2021-01-01','2025-01-01']},
  NDX:{name:'纳斯达克100',market:'us',base:'2016-10-28',release:'1985-01-31',scope:'美元价格指数',highYears:[2018,2020,2021,2024]},
  SPX:{name:'标普500',market:'us',base:'2016-10-28',release:'1957-03-04',scope:'美元价格指数',highYears:[2018,2020,2022,2024]}
 };
@@ -12,13 +11,14 @@ const change=(p,a)=>p/a-1;
 function validate(rows,cutoff){if(!Array.isArray(rows)||!rows.length)throw Error('收盘序列为空');let prev='';for(const r of rows){if(!/^\d{4}-\d{2}-\d{2}$/.test(r.date)||r.date<=prev||r.date>cutoff||!Number.isFinite(r.close)||r.close<=0)throw Error('收盘数据日期、顺序或点位无效');prev=r.date;}return rows;}
 const extreme=(rows,high)=>rows.reduce((a,r)=>!a||(high?r.close>a.close:r.close<a.close)?r:a,null);
 function model(code,rows,bands){if(META[code].market==='us')return usModel(code,rows,bands);const meta=META[code],last=rows.at(-1),hi=extreme(rows,true),lo=extreme(rows,false),historicalLow=extreme(rows.filter(r=>r.date>=meta.lowWindow[0]&&r.date<meta.lowWindow[1]),false);const peaks=meta.highYears.map(y=>({kind:'past-high',label:y+'年高点',...extreme(rows.filter(r=>r.date.startsWith(String(y))),true)})).filter(r=>r.date&&r.date!==hi.date);
- const cycleLow=extreme(rows.filter(r=>r.date>=hi.date),false);const references=[{kind:'current-high',label:'本轮最高收盘',...hi},...peaks,{kind:'previous-low',label:'上一轮主要低点',...historicalLow},...(lo.date!==historicalLow?.date?[{kind:'extreme-low',label:'全历史极端低点',...lo}]:[])].filter(r=>r.date).map(r=>({...r,relative:change(last.close,r.close),fromNow:change(r.close,last.close)}));
- return{code,...meta,last,hi,lo,cycleLow,peaks,historicalLow,references,drawdown:change(last.close,hi.close),bounce:change(last.close,cycleLow.close)};
+ const earlierLow=code==='399006'?extreme(rows.filter(r=>r.date>='2015-01-01'&&r.date<'2020-01-01'),false):null;const cycleLow=extreme(rows.filter(r=>r.date>=hi.date),false);const references=[{kind:'current-high',label:'本轮最高收盘',...hi},...peaks,{kind:'previous-low',label:'上一轮主要低点',...historicalLow},...(earlierLow?[{kind:'earlier-low',label:'2018年低点',...earlierLow}]:[]),...(lo.date!==historicalLow?.date?[{kind:'extreme-low',label:'全历史极端低点',...lo}]:[])].filter(r=>r.date).map(r=>({...r,relative:change(last.close,r.close),fromNow:change(r.close,last.close)}));
+ return{code,...meta,last,hi,lo,cycleLow,peaks,historicalLow,earlierLow,references,drawdown:change(last.close,hi.close),bounce:change(last.close,cycleLow.close)};
 }
 function situation(m,anchor){if(m.market==='us')return [{label:'回到本轮高点',price:m.hi.close,date:m.hi.date,change:change(m.hi.close,m.last.close),type:'reference'},...m.references.filter(r=>r.kind==='scenario').map(r=>({label:r.label,price:r.close,change:change(r.close,m.last.close),oldDepth:-r.depth,type:'hypothesis'}))];const oldHigh=anchor||m.peaks[0],low=m.historicalLow,dd=oldHigh&&low?change(low.close,oldHigh.close):null;return[
  ...m.references.filter(r=>r.kind.includes('high')).map(r=>({label:(r.close>=m.last.close?'反弹至':'回落至')+r.label,price:r.close,date:r.date,change:change(r.close,m.last.close),type:'reference'})),
  {label:'回到上一轮主要低点',price:low.close,date:low.date,change:change(low.close,m.last.close),type:'reference'},
  ...(dd!==null?[{label:'复刻该轮下跌深度',price:m.hi.close*(1+dd),change:change(m.hi.close*(1+dd),m.last.close),oldDepth:dd,type:'hypothesis'}]:[]),
+ ...(m.earlierLow?[{label:'回到2018年低点',price:m.earlierLow.close,date:m.earlierLow.date,change:change(m.earlierLow.close,m.last.close),type:'reference'}]:[]),
  ...(m.lo.date!==low.date?[{label:'回到全历史极端低点',price:m.lo.close,date:m.lo.date,change:change(m.lo.close,m.last.close),type:'reference'}]:[])
  ];}
 function plan(anchor,dd,weights,budget){if(!Number.isFinite(budget)||budget<=0||dd.some(x=>!(x>=0&&x<1))||weights.some(x=>!(x>0)))throw Error('请输入有效金额、回撤和投入比例');const sum=weights.reduce((s,v)=>s+v,0),tranches=dd.map((d,i)=>({drawdown:d,price:anchor*(1-d),cash:budget*weights[i]/sum})),units=tranches.reduce((s,x)=>s+x.cash/x.price,0);return{tranches,cost:budget/units,budget,units};}
