@@ -10,26 +10,21 @@ on:
         default: all
         description: Market to refresh
   schedule:
-    - cron: '30 15 * * 1-5'
-      timezone: Asia/Shanghai
-    - cron: '50 15 * * 1-5'
-      timezone: Asia/Shanghai
-    - cron: '10 16 * * 1-5'
-      timezone: Asia/Shanghai
+    # GitHub actually fired the timezone-labelled 15:30 entry at 15:36 UTC.
+    # Use explicit UTC hours so China closes refresh at 15:30 Beijing time.
+    - cron: '30 7 * * 1-5'
+    - cron: '50 7 * * 1-5'
+    - cron: '10 8 * * 1-5'
+    - cron: '30 10 * * 1-5'
+    - cron: '30 12 * * 1-5'
+    # 16:30 New York is 20:30 UTC in daylight time, 21:30 UTC in standard time.
+    # The exchange calendar prevents the earlier standard-time run from using an open session.
     - cron: '30 20 * * 1-5'
-      timezone: Asia/Shanghai
-    - cron: '30 16 * * 1-5'
-      timezone: America/New_York
-    - cron: '50 16 * * 1-5'
-      timezone: America/New_York
-    - cron: '30 17 * * 1-5'
-      timezone: America/New_York
-    - cron: '30 13 * * 1-5'
-      timezone: America/New_York
-    - cron: '50 13 * * 1-5'
-      timezone: America/New_York
+    - cron: '50 20 * * 1-5'
+    - cron: '30 21 * * 1-5'
+    - cron: '50 21 * * 1-5'
+    - cron: '30 22 * * 1-5'
     - cron: '45 0 * * 2-6'
-      timezone: America/New_York
 permissions:
   contents: write
 concurrency:
@@ -66,14 +61,14 @@ jobs:
         run: |
           market="$REQUESTED_MARKET"
           case "$SCHEDULE" in
-            '30 15 * * 1-5'|'50 15 * * 1-5'|'10 16 * * 1-5'|'30 20 * * 1-5') market=cn ;;
+            '30 7 * * 1-5'|'50 7 * * 1-5'|'10 8 * * 1-5'|'30 10 * * 1-5'|'30 12 * * 1-5') market=cn ;;
             '') ;;
             *) market=us ;;
           esac
           node scripts/update-price-map.mjs "$market" || price_status=$?
           if [ "${price_status:-0}" != "0" ]; then exit 1; fi
       - name: Refresh independent market sentiment module
-        if: github.event.schedule != '30 15 * * 1-5' && github.event.schedule != '50 15 * * 1-5' && github.event.schedule != '10 16 * * 1-5'
+        if: github.event.schedule != '30 7 * * 1-5' && github.event.schedule != '50 7 * * 1-5' && github.event.schedule != '10 8 * * 1-5' && github.event.schedule != '30 10 * * 1-5' && github.event.schedule != '30 12 * * 1-5'
         continue-on-error: true
         run: node scripts/update-market-data.mjs
       - name: Rebuild embedded offline snapshot
