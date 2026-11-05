@@ -9,7 +9,7 @@ test('ETF优选剔除过期和无效数据；接近溢价才比较年费率',()=
 test('只解析JSON数据，不执行外部页面脚本；费率缺失不默认为0',()=>{const x={rows:[{fund:{code:'159513',kind:'etf'},quote:{price_basis:'close'}}]},chunk='41:'+JSON.stringify(x)+'\n',html='<script>self.__next_f.push('+JSON.stringify([1,chunk])+')</script>';assert.equal(extractRows(html)[0].fund.code,'159513');assert.equal(parseFee('<th>管理费率</th><td>0.80%（每年）</td>','管理费率'),.008);assert.throws(()=>parseFee('没有费率','托管费率'));});
 test('分批成本按金额/份额计算；未篡改原A股排名',()=>{const r=P.plan(1000,[.3,.4,.5],[8,10,12],300000);assert(Math.abs(r.cost-575.8683729433273)<1e-9);const t=JSON.parse(fs.readFileSync(new URL('../data/etf-tracking.json',import.meta.url)));assert.deepEqual(t.rankings.find(x=>x.code==='000688').top3.map(x=>x.code),['588080','588000','588050']);assert.equal(t.end,'2026-10-28');});
 
-import {collectCN,verifiedAltCN,verifiedAltSPX,verifiedAltNDX,verifiedYahooTencent,parseNasdaqClose} from '../scripts/update-price-map.mjs';
+import {collectCN,verifiedAltCN,verifiedYahooTencentCN,verifiedAltSPX,verifiedAltNDX,verifiedYahooTencent,parseNasdaqClose} from '../scripts/update-price-map.mjs';
 test('纳指官方页面接受一位月日，并读到实际收盘',()=>{assert.deepEqual(parseNasdaqClose('DATA AS OF 11/2/2026 <data data-current-value="27,989.82">'),{date:'2026-11-02',close:27989.82});});
 test('纳指备用路径只接受Yahoo与腾讯同日收盘一致',async()=>{const original=globalThis.fetch,quote=[];quote[2]='.NDX';quote[3]='27989.82';quote[30]='2026-11-02 17:15:59';try{globalThis.fetch=async url=>({ok:true,json:async()=>String(url).includes('finance.yahoo.com')?{chart:{result:[{timestamp:[Date.parse('2026-11-02T21:00:00Z')/1000],indicators:{quote:[{close:[27989.8203125]}]}}]}}:{data:{usNDX:{qt:{usNDX:quote}}}}});assert.deepEqual((await verifiedYahooTencent('NDX','2026-11-02')).row,{date:'2026-11-02',close:27989.82});quote[3]='27990.82';await assert.rejects(verifiedYahooTencent('NDX','2026-11-02'),/不一致/);}finally{globalThis.fetch=original;}});
 test('官方新数据晚到时仍保存已核验的中间交易日，保持真实日期',async()=>{
@@ -35,6 +35,20 @@ test('备用A股收盘必须同日双源一致',async()=>{
   assert.deepEqual(result.rows,[{date:'2026-10-30',close:1160.84}]);
   mismatch=true;
   await assert.rejects(verifiedAltCN('000688','2026-10-29','2026-10-30'),/不一致/);
+ }finally{globalThis.fetch=original;}
+});
+
+test('创业板官方与东方财富延迟时只用Yahoo和腾讯同日一致的收盘补齐',async()=>{
+ const original=globalThis.fetch;let mismatch=false;
+ try{
+  globalThis.fetch=async url=>{
+   const u=String(url);
+   if(u.includes('eastmoney'))throw Error('feed unavailable');
+   return {ok:true,json:async()=>u.includes('finance.yahoo.com')?{chart:{result:[{timestamp:[Date.parse('2026-11-05T07:00:00Z')/1000],indicators:{quote:[{close:[2566.803]}]}}]}}:{data:{sz399006:{day:[['2026-11-05','2493.73',mismatch?'2565.80':'2566.800']]}}}};
+  };
+  assert.deepEqual((await verifiedAltCN('399006','2026-11-04','2026-11-05')).rows,[{date:'2026-11-05',close:2566.8}]);
+  mismatch=true;
+  await assert.rejects(verifiedYahooTencentCN('2026-11-04','2026-11-05'),/不一致/);
  }finally{globalThis.fetch=original;}
 });
 

@@ -19,13 +19,25 @@ export async function verifiedAltCN(code,start,target){
  const secid=(code==='399006'?'0.':'1.')+code,symbol=(code==='399006'?'sz':'sh')+code;
  const emUrl=`https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=${secid}&klt=101&fqt=0&beg=${start.replaceAll('-','')}&end=${target.replaceAll('-','')}&lmt=30&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53`;
  const txUrl=`https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=${symbol},day,${start},${target},30,`;
- const [em,tx]=await Promise.all([get(emUrl),get(txUrl)]);
+ let em;try{em=await get(emUrl);}catch(e){if(code==='399006')return verifiedYahooTencentCN(start,target);throw e;}
+ const tx=await get(txUrl);
  if(!Array.isArray(em.data?.klines)||!Array.isArray(tx.data?.[symbol]?.day))throw Error('备用双源缺少日线');
  const e=em.data.klines.map(x=>{const a=x.split(',');return{date:a[0],close:Number(a[2])}}).filter(x=>x.date>=start&&x.date<=target);
  const t=new Map(tx.data[symbol].day.map(x=>[x[0],Number(x[2])])),rows=e.filter(x=>t.has(x.date));
  if(rows.at(-1)?.date!==target)throw Error('备用双源未同时返回应到交易日');
  if(rows.some(x=>!Number.isFinite(x.close)||x.close<=0||Math.abs(x.close-t.get(x.date))>.03))throw Error('备用双源收盘不一致');
  P.validate(rows,target);return{rows,source:emUrl,verificationSource:txUrl};
+}
+export async function verifiedYahooTencentCN(start,target){
+ const p1=Math.floor(Date.parse(start)/1000),p2=Math.floor(Date.parse(target)/1000)+86400;
+ const yahooUrl=`https://query1.finance.yahoo.com/v8/finance/chart/399006.SZ?period1=${p1}&period2=${p2}&interval=1d`;
+ const txUrl=`https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sz399006,day,${start},${target},30,`;
+ const [yahoo,tx]=await Promise.all([get(yahooUrl),get(txUrl)]),chart=yahoo.chart?.result?.[0];
+ const rows=(chart?.timestamp||[]).map((timestamp,i)=>({date:new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(timestamp*1000)),close:Math.round(Number(chart.indicators.quote[0].close[i])*100)/100})).filter(x=>x.date>=start&&x.date<=target&&Number.isFinite(x.close)&&x.close>0);
+ const txRows=new Map((tx.data?.sz399006?.day||[]).map(x=>[x[0],Number(x[2])]));
+ if(rows.at(-1)?.date!==target||!txRows.has(target))throw Error('创业板备用双源未同时返回应到交易日');
+ if(rows.some(x=>!txRows.has(x.date)||Math.abs(x.close-txRows.get(x.date))>.03))throw Error('创业板Yahoo与腾讯收盘不一致');
+ P.validate(rows,target);return{rows,source:yahooUrl,verificationSource:txUrl};
 }
 export async function verifiedAltSPX(target){
  const start=new Date(Date.parse(target)-8*86400000).toISOString().slice(0,10),emUrl=`https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=100.SPX&klt=101&fqt=0&beg=${start.replaceAll('-','')}&end=${target.replaceAll('-','')}&lmt=20&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53`,txUrl=`https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=usINX,day,${start},${target},20,`;
