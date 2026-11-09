@@ -80,17 +80,19 @@ jobs:
           git add data/price-map.json data/market-sentiment.json seed.js
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'data: refresh validated market closes and status'
+          verify_failed=0
           for attempt in 1 2 3; do
-            if git push origin HEAD:main; then exit 0; fi
+            if git push origin HEAD:main; then exit "$verify_failed"; fi
             echo "Push conflict or transient error; re-checking current main (attempt $attempt)"
             git fetch origin main
             git reset --hard origin/main
             python scripts/market_calendar.py
-            node scripts/update-price-map.mjs all || true
+            verify_failed=0
+            node scripts/update-price-map.mjs all || verify_failed=1
             node scripts/update-market-data.mjs || true
             node scripts/build-map.mjs
             git add data/price-map.json data/market-sentiment.json seed.js
-            if git diff --cached --quiet; then exit 0; fi
+            if git diff --cached --quiet; then exit "$verify_failed"; fi
             git commit -m 'data: refresh validated market closes and status'
             sleep 5
           done
