@@ -10,21 +10,21 @@ on:
         default: all
         description: Market to refresh
   schedule:
-    # GitHub actually fired the timezone-labelled 15:30 entry at 15:36 UTC.
-    # Use explicit UTC hours so China closes refresh at 15:30 Beijing time.
-    - cron: '30 7 * * 1-5'
-    - cron: '50 7 * * 1-5'
-    - cron: '10 8 * * 1-5'
-    - cron: '30 10 * * 1-5'
-    - cron: '30 12 * * 1-5'
-    # 16:30 New York is 20:30 UTC in daylight time, 21:30 UTC in standard time.
-    # The exchange calendar prevents the earlier standard-time run from using an open session.
-    - cron: '30 20 * * 1-5'
-    - cron: '50 20 * * 1-5'
-    - cron: '30 21 * * 1-5'
-    - cron: '50 21 * * 1-5'
-    - cron: '30 22 * * 1-5'
-    - cron: '45 0 * * 2-6'
+    # GitHub schedule is best effort: use non-round minutes and retry later.
+    # The exchange calendar and close+30-minute gate decide the eligible session.
+    - cron: '37 7 * * 1-5'
+    - cron: '53 7 * * 1-5'
+    - cron: '17 8 * * 1-5'
+    - cron: '43 9 * * 1-5'
+    - cron: '13 12 * * 1-5'
+    # New York close+30 minutes is 20:30/21:30 UTC across DST.
+    - cron: '37 20 * * 1-5'
+    - cron: '53 20 * * 1-5'
+    - cron: '17 21 * * 1-5'
+    - cron: '37 21 * * 1-5'
+    - cron: '53 21 * * 1-5'
+    - cron: '17 22 * * 1-5'
+    - cron: '13 0 * * 2-6'
 permissions:
   contents: write
 concurrency:
@@ -61,7 +61,7 @@ jobs:
         run: |
           market="$REQUESTED_MARKET"
           case "$SCHEDULE" in
-            '30 7 * * 1-5'|'50 7 * * 1-5'|'10 8 * * 1-5'|'30 10 * * 1-5'|'30 12 * * 1-5') market=cn ;;
+            '37 7 * * 1-5'|'53 7 * * 1-5'|'17 8 * * 1-5'|'43 9 * * 1-5'|'13 12 * * 1-5') market=cn ;;
             '') ;;
             *) market=us ;;
           esac
