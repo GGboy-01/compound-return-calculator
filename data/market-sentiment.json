@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-13T06:33:31.219Z",
+  "generatedAt": "2026-11-13T15:39:44.518Z",
   "methodology": {
     "window": "5年交易日",
     "percentile": "当前收盘值在近5年每日收盘值中的经验分位",
@@ -67,11 +67,11 @@
       "referenceIndex": {
         "name": "标普500",
         "symbol": "SPX",
-        "asOf": "2026-11-11",
-        "close": 7619.38,
-        "previousAsOf": "2026-11-10",
-        "previousClose": 7520.93,
-        "changePercent": 1.31
+        "asOf": "2026-11-12",
+        "close": 7592.4,
+        "previousAsOf": "2026-11-11",
+        "previousClose": 7619.38,
+        "changePercent": -0.35
       }
     },
     "nasdaq100": {
