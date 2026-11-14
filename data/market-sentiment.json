@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-14T01:05:58.349Z",
+  "generatedAt": "2026-11-14T06:11:28.998Z",
   "methodology": {
     "window": "5年交易日",
     "percentile": "当前收盘值在近5年每日收盘值中的经验分位",
@@ -54,16 +54,16 @@
     "sp500": {
       "indexName": "标普500",
       "indicator": "VIX",
-      "asOf": "2026-11-12",
-      "close": 18.7,
-      "previousAsOf": "2026-11-11",
-      "previousClose": 17.49,
-      "changePercent": 6.92,
-      "percentile5y": 58.1,
+      "asOf": "2026-11-13",
+      "close": 19.3,
+      "previousAsOf": "2026-11-12",
+      "previousClose": 18.7,
+      "changePercent": 3.21,
+      "percentile5y": 62.6,
       "sampleSize": 1288,
-      "multiplier": 1,
-      "sentiment": "正常",
-      "tier": "normal",
+      "multiplier": 1.2,
+      "sentiment": "偏恐慌",
+      "tier": "uneasy",
       "referenceIndex": {
         "name": "标普500",
         "symbol": "SPX",
@@ -90,11 +90,11 @@
       "referenceIndex": {
         "name": "纳斯达克100",
         "symbol": "NDX",
-        "asOf": "2026-11-12",
-        "close": 28289.19,
-        "previousAsOf": "2026-11-11",
-        "previousClose": 28374.25,
-        "changePercent": -0.3
+        "asOf": "2026-11-13",
+        "close": 27943.74,
+        "previousAsOf": "2026-11-12",
+        "previousClose": 28289.19,
+        "changePercent": -1.22
       }
     }
   }
