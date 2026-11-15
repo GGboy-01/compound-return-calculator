@@ -1660,7 +1660,7 @@
           <div>
             <p class="section-kicker">Historical returns</p>
             <h2>全球主要指数年度收益</h2>
-            <p class="section-desc">每格依次显示年份、年度涨跌幅与年末收盘点位。纳斯达克100、标普500、日经225和韩国KOSPI展示 1986–2025 年；沪深300从 2005 年开始。均为价格指数，不包含分红。</p>
+            <p class="section-desc">每格依次显示年份、年度涨跌幅与年末收盘点位。纳斯达克100、标普500、日经225和韩国KOSPI展示 1986–2025 年；科创50从 2020 年开始。均为价格指数，不包含分红。</p>
           </div>
           <div class="history-legend" aria-label="颜色说明">
             <span><i class="up"></i>上涨年份</span>
@@ -1672,7 +1672,7 @@
           <option value="nasdaq" selected>纳斯达克100</option>
           <option value="sp500">标普500</option>
           <option value="nikkei">日经225</option>
-          <option value="csi300">沪深300</option>
+          <option value="csi300">科创50</option>
           <option value="kospi">韩国KOSPI</option>
         </select>
 
@@ -1680,7 +1680,7 @@
           <button class="index-btn" type="button" data-index="nasdaq" aria-selected="true">纳斯达克100</button>
           <button class="index-btn" type="button" data-index="sp500" aria-selected="false">标普500</button>
           <button class="index-btn" type="button" data-index="nikkei" aria-selected="false">日经225</button>
-          <button class="index-btn" type="button" data-index="csi300" aria-selected="false">沪深300</button>
+          <button class="index-btn" type="button" data-index="csi300" aria-selected="false">科创50</button>
           <button class="index-btn" type="button" data-index="kospi" aria-selected="false">韩国KOSPI</button>
         </div>
 
@@ -1783,10 +1783,10 @@
         <article class="index-view" id="csi300View" hidden>
           <div class="index-title-row">
             <div>
-              <h3>沪深300年度价格收益率</h3>
-              <p>CSI 300 Price Return Index（000300）</p>
+              <h3>科创50年度价格收益率</h3>
+              <p>STAR 50 Price Return Index（000688）</p>
             </div>
-            <span class="history-period">2005–2025 · 21年</span>
+            <span class="history-period">2020–2025 · 6年</span>
           </div>
           <div class="history-summary" aria-live="polite">
             <div class="history-stat">
@@ -1808,8 +1808,8 @@
             <button class="copy-btn" id="csi300ResetRange" type="button">全部年份</button>
             <p class="history-range-note" id="csi300RangeNote"></p>
           </div>
-          <div class="return-grid" id="csi300Grid" aria-label="沪深300自发布以来年度收益率"></div>
-          <p class="history-source">沪深300基日为 2004-12-31（基点 1000），正式发布于 2005-04-08。2005 年卡片使用基点 1000 至年末 923.45 点，因此并非完整的发布后日历年。来源：<a href="https://oss-ch.csindex.com.cn/static/html/csindex/public/uploads/indices/detail/files/zh_CN/000300factsheet.pdf" target="_blank" rel="noreferrer">中证指数官方资料</a>、<a href="https://www.sse.com.cn/aboutus/publication/monthly/index/" target="_blank" rel="noreferrer">上海证券交易所统计资料</a>，截至 2025-12-31。</p>
+          <div class="return-grid" id="csi300Grid" aria-label="科创50自发布以来年度收益率"></div>
+          <p class="history-source">科创50（上证科创板50成份指数，000688）基日为 2019-12-31（基点 1000），正式发布于 2020-07-23。2020 年卡片使用基点 1000 至年末 1393.03 点，因此并非完整的发布后日历年。来源：<a href="https://www.csindex.com.cn/" target="_blank" rel="noreferrer">中证指数官方资料</a>、<a href="https://www.sse.com.cn/" target="_blank" rel="noreferrer">上海证券交易所</a>、<a href="https://quote.eastmoney.com/" target="_blank" rel="noreferrer">东方财富行情数据</a>，截至 2025-12-31。</p>
         </article>
 
         <article class="index-view" id="kospiView" hidden>
@@ -1914,10 +1914,8 @@
           17225.83, 15307.78, 8859.56, 10546.44, 10228.92, 8455.35, 10395.18, 16291.31, 17450.77, 19033.71,
           19114.37, 22764.94, 20014.77, 23656.62, 27444.17, 28791.71, 26094.50, 33464.17, 39894.54, 50339.48
         ]},
-        csi300: { startYear: 2005, base: 1000, closes: [
-          923.45, 2041.05, 5338.27, 1817.72, 3575.68, 3128.26, 2345.74, 2522.95, 2330.03, 3533.71,
-          3731.00, 3310.08, 4030.85, 3010.65, 4096.58, 5211.29, 4940.37, 3871.63, 3431.11, 3934.91,
-          4629.94
+        csi300: { startYear: 2020, base: 1000, closes: [
+          1393.03, 1398.19, 959.90, 852.00, 988.93, 1344.20
         ]}
       };
 
