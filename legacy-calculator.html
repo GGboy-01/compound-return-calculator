@@ -1660,7 +1660,7 @@
           <div>
             <p class="section-kicker">Historical returns</p>
             <h2>全球主要指数年度收益</h2>
-            <p class="section-desc">每格依次显示年份、年度涨跌幅与年末收盘点位。纳斯达克100、标普500、日经225和韩国KOSPI展示 1986–2025 年；科创50从 2020 年开始。均为价格指数，不包含分红。</p>
+            <p class="section-desc">每格依次显示年份、年度涨跌幅与年末收盘点位。纳斯达克100、标普500、日经225展示 1986–2025 年；创业板指从 2010 年、科创综指从 2020 年开始。除科创综指为全收益指数（计入分红）外，其余均为价格指数，不包含分红。</p>
           </div>
           <div class="history-legend" aria-label="颜色说明">
             <span><i class="up"></i>上涨年份</span>
@@ -1672,16 +1672,16 @@
           <option value="nasdaq" selected>纳斯达克100</option>
           <option value="sp500">标普500</option>
           <option value="nikkei">日经225</option>
-          <option value="csi300">科创50</option>
-          <option value="kospi">韩国KOSPI</option>
+          <option value="csi300">科创综指</option>
+          <option value="kospi">创业板指</option>
         </select>
 
         <div class="index-switch" aria-label="指数选择">
           <button class="index-btn" type="button" data-index="nasdaq" aria-selected="true">纳斯达克100</button>
           <button class="index-btn" type="button" data-index="sp500" aria-selected="false">标普500</button>
           <button class="index-btn" type="button" data-index="nikkei" aria-selected="false">日经225</button>
-          <button class="index-btn" type="button" data-index="csi300" aria-selected="false">科创50</button>
-          <button class="index-btn" type="button" data-index="kospi" aria-selected="false">韩国KOSPI</button>
+          <button class="index-btn" type="button" data-index="csi300" aria-selected="false">科创综指</button>
+          <button class="index-btn" type="button" data-index="kospi" aria-selected="false">创业板指</button>
         </div>
 
         <article class="index-view" id="nasdaqView">
@@ -1783,8 +1783,8 @@
         <article class="index-view" id="csi300View" hidden>
           <div class="index-title-row">
             <div>
-              <h3>科创50年度价格收益率</h3>
-              <p>STAR 50 Price Return Index（000688）</p>
+              <h3>科创综指年度收益率</h3>
+              <p>STAR Composite Index（000680）</p>
             </div>
             <span class="history-period">2020–2025 · 6年</span>
           </div>
@@ -1808,17 +1808,17 @@
             <button class="copy-btn" id="csi300ResetRange" type="button">全部年份</button>
             <p class="history-range-note" id="csi300RangeNote"></p>
           </div>
-          <div class="return-grid" id="csi300Grid" aria-label="科创50自发布以来年度收益率"></div>
-          <p class="history-source">科创50（上证科创板50成份指数，000688）基日为 2019-12-31（基点 1000），正式发布于 2020-07-23。2020 年卡片使用基点 1000 至年末 1393.03 点，因此并非完整的发布后日历年。来源：<a href="https://www.csindex.com.cn/" target="_blank" rel="noreferrer">中证指数官方资料</a>、<a href="https://www.sse.com.cn/" target="_blank" rel="noreferrer">上海证券交易所</a>、<a href="https://quote.eastmoney.com/" target="_blank" rel="noreferrer">东方财富行情数据</a>，截至 2025-12-31。</p>
+          <div class="return-grid" id="csi300Grid" aria-label="科创综指自基日以来年度收益率"></div>
+          <p class="history-source">科创综指（上证科创板综合指数，000680）基日为 2019-12-31（基点 1000），正式发布于 2025-01-20，将样本分红计入指数收益（全收益口径）。2020 年卡片使用基点 1000 至年末 1471.29 点，因此并非完整的发布后日历年。来源：<a href="https://www.csindex.com.cn/" target="_blank" rel="noreferrer">中证指数官方资料</a>、<a href="https://www.sse.com.cn/" target="_blank" rel="noreferrer">上海证券交易所</a>、<a href="https://quote.eastmoney.com/" target="_blank" rel="noreferrer">东方财富行情数据</a>，截至 2025-12-31。</p>
         </article>
 
         <article class="index-view" id="kospiView" hidden>
           <div class="index-title-row">
             <div>
-              <h3>韩国KOSPI年度价格收益率</h3>
-              <p>Korea Composite Stock Price Index（KOSPI）</p>
+              <h3>创业板指年度价格收益率</h3>
+              <p>ChiNext Price Index（399006）</p>
             </div>
-            <span class="history-period">1986–2025 · 40年</span>
+            <span class="history-period">2010–2025 · 16年</span>
           </div>
           <div class="history-summary" aria-live="polite">
             <div class="history-stat">
@@ -1840,8 +1840,8 @@
             <button class="copy-btn" id="kospiResetRange" type="button">全部年份</button>
             <p class="history-range-note" id="kospiRangeNote"></p>
           </div>
-          <div class="return-grid" id="kospiGrid" aria-label="韩国KOSPI近40年年度收益率"></div>
-          <p class="history-source">年度收盘点位按 KOSPI 历史年度表整理，早期数据与 SEC 披露文件、近期数据与韩国交易所披露文件交叉核对。来源：<a href="https://en.wikipedia.org/wiki/KOSPI#Annual_Returns" target="_blank" rel="noreferrer">KOSPI 年度历史表</a>、<a href="https://www.sec.gov/Archives/edgar/data/1290109/000119312511123762/d20f.htm" target="_blank" rel="noreferrer">SEC 历史点位披露</a>、<a href="https://kind.krx.co.kr/external/2026/05/14/000975/20260514002143/11013.htm" target="_blank" rel="noreferrer">KRX 披露资料</a>。截至 2025 年末；以韩元计价，不含分红与汇率变化。</p>
+          <div class="return-grid" id="kospiGrid" aria-label="创业板指自发布以来年度收益率"></div>
+          <p class="history-source">创业板指（创业板指数P，399006）基日为 2010-05-31（基点 1000），正式发布于 2010-06-01，由创业板市场市值大、流动性好的 100 只股票组成，价格指数不含分红。2010 年卡片使用基点 1000 至年末 1137.66 点，因此并非完整的发布后日历年。来源：<a href="https://www.cnindex.com.cn/" target="_blank" rel="noreferrer">国证指数官网</a>、<a href="https://www.szse.cn/" target="_blank" rel="noreferrer">深圳证券交易所</a>、<a href="https://quote.eastmoney.com/" target="_blank" rel="noreferrer">东方财富行情数据</a>，截至 2025-12-31。</p>
         </article>
 
 
@@ -1890,11 +1890,9 @@
       };
 
       const historicalReturns = {
-        kospi: { startYear: 1986, base: 163.37, closes: [
-          272.61, 525.11, 907.20, 909.72, 696.11, 610.92, 678.44, 866.18, 1027.37, 882.94,
-          651.22, 376.31, 562.46, 1028.07, 504.62, 693.70, 627.55, 810.71, 895.92, 1379.37,
-          1434.46, 1897.13, 1124.47, 1682.77, 2051.00, 1825.74, 1997.05, 2011.34, 1915.59, 1961.31,
-          2026.46, 2467.49, 2041.04, 2197.67, 2873.47, 2977.65, 2236.40, 2655.28, 2399.49, 4214.17
+        kospi: { startYear: 2010, base: 1000, closes: [
+          1137.66, 729.50, 713.86, 1304.44, 1471.76, 2714.05, 1962.06, 1752.65, 1250.53, 1798.12,
+          2966.26, 3322.67, 2346.77, 1891.37, 2141.60, 3203.17
         ]},
         nasdaq: { startYear: 1986, base: 132.29, closes: [
           141.41, 156.25, 177.41, 223.84, 200.53, 330.86, 360.19, 398.28, 404.27, 576.23,
@@ -1915,7 +1913,7 @@
           19114.37, 22764.94, 20014.77, 23656.62, 27444.17, 28791.71, 26094.50, 33464.17, 39894.54, 50339.48
         ]},
         csi300: { startYear: 2020, base: 1000, closes: [
-          1393.03, 1398.19, 959.90, 852.00, 988.93, 1344.20
+          1471.29, 1633.48, 1196.79, 1105.09, 1118.73, 1636.70
         ]}
       };
 
