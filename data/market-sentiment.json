@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-18T18:23:04.441Z",
+  "generatedAt": "2026-11-19T01:58:23.289Z",
   "methodology": {
     "window": "5年交易日",
     "percentile": "当前收盘值在近5年每日收盘值中的经验分位",
@@ -67,22 +67,22 @@
       "referenceIndex": {
         "name": "标普500",
         "symbol": "SPX",
-        "asOf": "2026-11-17",
-        "close": 7340.53,
-        "previousAsOf": "2026-11-16",
-        "previousClose": 7416.59,
-        "changePercent": -1.03
+        "asOf": "2026-11-18",
+        "close": 7323.63,
+        "previousAsOf": "2026-11-17",
+        "previousClose": 7340.53,
+        "changePercent": -0.23
       }
     },
     "nasdaq100": {
       "indexName": "纳斯达克100",
       "indicator": "VXN",
-      "asOf": "2026-11-17",
-      "close": 34.44,
-      "previousAsOf": "2026-11-16",
-      "previousClose": 32.9,
-      "changePercent": 4.68,
-      "percentile5y": 93.9,
+      "asOf": "2026-11-18",
+      "close": 33.12,
+      "previousAsOf": "2026-11-17",
+      "previousClose": 34.44,
+      "changePercent": -3.83,
+      "percentile5y": 91.2,
       "sampleSize": 1256,
       "multiplier": 1.5,
       "sentiment": "高度恐慌",
