@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-20T02:34:33.385Z",
+  "generatedAt": "2026-11-20T02:43:23.602Z",
   "methodology": {
     "window": "5年交易日",
     "percentile": "当前收盘值在近5年每日收盘值中的经验分位",
@@ -54,12 +54,12 @@
     "sp500": {
       "indexName": "标普500",
       "indicator": "VIX",
-      "asOf": "2026-11-18",
-      "close": 24.56,
-      "previousAsOf": "2026-11-17",
-      "previousClose": 25.46,
-      "changePercent": -3.53,
-      "percentile5y": 84.5,
+      "asOf": "2026-11-19",
+      "close": 28.44,
+      "previousAsOf": "2026-11-18",
+      "previousClose": 24.56,
+      "changePercent": 15.8,
+      "percentile5y": 92.9,
       "sampleSize": 1288,
       "multiplier": 1.5,
       "sentiment": "高度恐慌",
